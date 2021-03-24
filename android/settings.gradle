@@ -1,0 +1,4 @@
+rootProject.name = 'gymroom'
+//include ':react-native-google-signin', ':app'  google sign in
+apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesSettingsGradle(settings)
+include ':app'
