@@ -35,6 +35,7 @@ import Registro from './components/registro/Registro';
 //main components
 import MainUserScreen from './components/mainUser/MainUserScreen';
 import MainTrainerScreen from './components/mainTrainer/MainTrainerScreen';
+import MainUserGeneralScreen from './components/mainUser/mainUserGeneral/MainUserGeneralScreen';
 
 //  Components user
 import Routines from './components/mainUser/Routines';
@@ -43,11 +44,21 @@ import CustomPlan from './components/mainUser/CustomPlan';
 import Statistics from './components/mainUser/Statistics';
 import Proof from './components/nestingProof/HomeScreen';
 import SaveSessionQuestion from './components/compartido/SaveSessionQuestion';
+import TrainerProfile from './components/mainUser/listTrainersComponents/TrainerProfile';
 
 import Colors from './colors/colors';
 
 import * as Keychain from 'react-native-keychain';
 import MessageUser from './components/mainUser/MessageUser';
+import AskScreen from './components/login/AskScreen';
+import ListMyTrainers from './components/mainUser/listTrainersComponents/ListMyTrainers';
+import MessageTrainer from './components/mainTrainer/MessageTrainer';
+import ListUsers from './components/mainTrainer/ListUsers';
+import SubCategories from './components/mainUser/routines/SubCategories';
+import SubRoutines from './components/mainUser/routines/SubRoutines';
+import CurrentRoutine from './components/mainUser/routines/CurrentRoutine';
+import UserProfile from './components/mainTrainer/UserProfile';
+import T_SubRoutines from './components/mainTrainer/routines/T_SubRoutines';
 
 const Stack = createStackNavigator();
 
@@ -55,7 +66,7 @@ const store = createStore(mainReducer);
 
 const App = () => {
 
-  let initialRoute = 'Login';
+  let initialRoute = 'AskScreen';
 
   return (
     <Provider store={store}>
@@ -99,6 +110,70 @@ const App = () => {
                 header: () => null
               }}
             />
+            <Stack.Screen 
+              name="MainUserGeneralScreen"
+              component={MainUserGeneralScreen}
+              options={{
+                header: () => null
+              }}
+            />
+            <Stack.Screen 
+              name="TrainerProfile"
+              component={TrainerProfile}
+              options={{
+                header: () => null
+              }}
+            />
+            <Stack.Screen 
+              name="AskScreen"
+              component={AskScreen}
+              options={{
+                header: () => null
+              }}
+            />
+            <Stack.Screen 
+              name="ListUsers"
+              component={ListUsers}
+              options={{
+                header: () => null
+              }}
+            />
+            <Stack.Screen 
+              name="UserProfile"
+              component={UserProfile}
+              options={{
+                header: () => null
+              }}
+            />
+
+            <Stack.Screen 
+              name="SubCategories"
+              component={SubCategories}
+              options={{
+                header: () => null
+              }}
+            />
+            <Stack.Screen 
+              name="SubRoutines"
+              component={SubRoutines}
+              options={{
+                header: () => null
+              }}
+            />
+            <Stack.Screen 
+              name="T_SubRoutines"
+              component={T_SubRoutines}
+              options={{
+                header: () => null
+              }}
+            />
+            <Stack.Screen 
+              name="CurrentRoutine"
+              component={CurrentRoutine}
+              options={{
+                header: () => null
+              }}
+            />
 
                 <Stack.Screen 
                   name="Routines"
@@ -137,6 +212,15 @@ const App = () => {
               }}
             />
 
+            
+            <Stack.Screen 
+              name="ListMyTrainers"
+              component={ListMyTrainers}
+              options={{
+                header: () => null
+              }}
+            />
+
             <Stack.Screen 
               name="SaveSessionQuestion"
               component={SaveSessionQuestion}
@@ -148,6 +232,14 @@ const App = () => {
             <Stack.Screen 
               name="MessageUser"
               component={MessageUser}
+              options={{
+                header: () => null
+              }}
+            />
+
+            <Stack.Screen 
+              name="MessageTrainer"
+              component={MessageTrainer}
               options={{
                 header: () => null
               }}

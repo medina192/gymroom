@@ -42,7 +42,7 @@ const SideBarUser = ({navigation}) => {
                     <Icon name="envelope" size={24} style={styles.iconLink} color="#fff" />
                     <Text style={styles.textLink}>Mensajes</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.buttonLink} onPress={ () => navigation.navigate('ListTrainers')}>
+                <TouchableOpacity style={styles.buttonLink} onPress={ () => navigation.navigate('ListUsers')}>
                     <Icon name="group" size={24} style={styles.iconLink} color="#fff" />
                     <Text style={styles.textLink}>Usuarios</Text>
                 </TouchableOpacity>

@@ -13,6 +13,8 @@ import {
 
 import { Button, Paragraph, Dialog, Portal } from 'react-native-paper';
 
+import { useDispatch, useSelector } from 'react-redux';
+
 import axios from 'axios';
 
 import FontAwesome, { SolidIcons, RegularIcons, BrandIcons } from 'react-native-fontawesome';
@@ -26,6 +28,10 @@ import { GoogleSignin, GoogleSigninButton, statusCodes } from '@react-native-goo
 import { LoginButton, AccessToken } from 'react-native-fbsdk';
 //import { Colors } from 'react-native/Libraries/NewAppScreen';
 import Colors from '../../colors/colors';
+
+import { urlServer } from '../../services/urlServer';
+
+import { saveUser, T_saveTrainer} from '../../store/actions/actionsReducer';
 
 
 const Registro = ({navigation}) => {
@@ -55,9 +61,9 @@ const Registro = ({navigation}) => {
     });
   }, []);
 
+  const dispatch = useDispatch();
 
-
-  const serverUrl = 'http://192.168.1.77:3001';
+  const serverUrl = urlServer.url;
   //const serverUrl = 'http://localhost:3001';
 
 
@@ -239,7 +245,8 @@ const Registro = ({navigation}) => {
             })
             .then(function (response) {
                 console.log('good, user registered',response);
-                navigation.navigate('SaveSessionQuestion',{user: bodyUser, role: 'MainUserScreen'});
+                dispatch(saveUser(bodyUser));
+                navigation.navigate('SaveSessionQuestion');
             })
             .catch(function (error) {
                 //console.log('res', error.response.data.sqlMessage);
@@ -291,7 +298,8 @@ const Registro = ({navigation}) => {
           })
           .then(function (response) {
               console.log('good, trainer registered',response);
-              navigation.navigate('SaveSessionQuestion',{user: bodyUser, role: 'MainTrainerScreen'});
+              dispatch(T_saveTrainer(bodyUser));
+              navigation.navigate('SaveSessionQuestion');
           })
           .catch(function (error) {
               console.log('error axios',error);

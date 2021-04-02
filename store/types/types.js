@@ -1,3 +1,9 @@
 export const types = {
     saveUser: 'saveUser',
+    saveTrainer: 'saveTrainer',
+    T_saveTrainer: 'T_saveTrainer',
+    T_saveUser: 'T_saveUser',
+    saveSubCategorie: 'saveSubCategorie',
+    saveSubRoutine: 'saveSubRoutine',
+    currentRoutine: 'currentRoutine'
 }

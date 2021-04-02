@@ -29,6 +29,8 @@ import Colors from '../../colors/colors';
 import SideBarTrainer from '../compartido/SideBarTrainer';
 import BottomBar from '../compartido/BottomBar';
 
+import { useDispatch, useSelector } from 'react-redux';
+
 const Drawer = createDrawerNavigator();
 
 export default function MainTrainerScreen({navigation}) {
@@ -47,7 +49,7 @@ const TrainerScreen = ({navigation}) => {
   const changeUserScreen = (newScreen) => {
     navigation.navigate(newScreen);
   }
-
+  const T_trainer = useSelector(state => state);
   /*
 
   const proof = async() => {

@@ -27,7 +27,9 @@ import Colors from '../../colors/colors';
 
 import * as Keychain from 'react-native-keychain';
 
-import { saveUser } from '../../store/actions/actionsReducer';
+import { saveUser, T_saveTrainer } from '../../store/actions/actionsReducer';
+
+import { urlServer } from '../../services/urlServer';
 
 
 const Login = ({navigation}) => {
@@ -48,13 +50,14 @@ const Login = ({navigation}) => {
       const credentials = await Keychain.getGenericPassword();
       if (credentials) {
         const userObject = JSON.parse(credentials.username);
-        dispatch(saveUser(userObject));
 
         if(credentials.password == '1')
         {
+          dispatch(saveUser(userObject));
           navigation.navigate('MainUserScreen');
         }
         else{
+          dispatch(T_saveTrainer(userObject));
           navigation.navigate('MainTrainerScreen');
         }
       } else {
@@ -70,7 +73,7 @@ const Login = ({navigation}) => {
     
     verifyIfUserIsLogged();
 
-  }, [])
+  }, []);
 
   const [form, setform] = useState({
     email: '',
@@ -87,7 +90,7 @@ const Login = ({navigation}) => {
     setIsEnabled(previousState => !previousState);
   };
 
-  const serverUrl = 'http://192.168.1.77:3001';
+  const serverUrl = urlServer.url;
   //const serverUrl = 'http://localhost:3001';
 
 
@@ -116,7 +119,7 @@ const Login = ({navigation}) => {
 
 
   const generateSecureStorage = async(user, rol) => {  // save the session
-    console.log(user);
+
     const username = user;
     const password = rol;
 
@@ -131,7 +134,7 @@ const Login = ({navigation}) => {
             navigation.navigate('MainUserScreen');
           }
           else{
-            dispatch(saveUser(userObject));
+            dispatch(T_saveTrainer(userObject));
             navigation.navigate('MainTrainerScreen');
           }
 
@@ -159,17 +162,21 @@ const Login = ({navigation}) => {
       .then(function (response) {
           console.log('good, user logged',response.data.resp[0].role);
           const userString = JSON.stringify(response.data.resp[0]);
-
+          const userObject = JSON.parse(userString);
           if(isEnabled)
           {
             if(response.data.resp[0].role == '1')
             {
               console.log('user');
+
+              dispatch(saveUser(userObject));
               generateSecureStorage(userString, '1', );
               //navigation.navigate('MainUserScreen');
             }
             else{
               console.log('trainer');
+
+              dispatch(T_saveTrainer(userObject));
               generateSecureStorage(userString, '2',);
               //navigation.navigate('MainTrainerScreen');
             }
@@ -177,11 +184,13 @@ const Login = ({navigation}) => {
           else{
             if(response.data.resp[0].role == '1')
             {
-              console.log('user');
+
+              dispatch(saveUser(userObject));
               navigation.navigate('MainUserScreen');
             }
             else{
-              console.log('trainer');
+
+              dispatch(T_saveTrainer(userObject));
               navigation.navigate('MainTrainerScreen');
             }
           }

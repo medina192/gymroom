@@ -16,7 +16,7 @@ import {
 
 import axios from 'axios';
 
-import Colors from '../../../colors/colors';
+import Colors from '../../colors/colors';
 
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Button, Paragraph, Dialog, Portal } from 'react-native-paper';
@@ -25,31 +25,29 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { createDrawerNavigator } from '@react-navigation/drawer';
 
-import { urlServer } from '../../../services/urlServer';
+import { urlServer } from '../../services/urlServer';
 
-import { saveTrainer } from '../../../store/actions/actionsReducer';
+import { T_saveUser } from '../../store/actions/actionsReducer';
 
-const TrainerCard = ({trainer, navigation}) => {
+
+const CardUser = ({user, navigation}) => {
 
   const serverUrl = urlServer.url;
   
-
-
   const dispatch = useDispatch();
 
 
-
   const changeToMessageScreen = () => {
-    const trainerInformation = {
-      trainer: trainer.item
-    }
+
     
   }
 
   const watchProfile = () => {
-    dispatch(saveTrainer(trainer.item));
-    navigation.navigate('TrainerProfile');
+    dispatch(T_saveUser(user.item));
+    navigation.navigate('UserProfile');
   }
+
+
 
   return (
     <>
@@ -57,7 +55,7 @@ const TrainerCard = ({trainer, navigation}) => {
           <View style={styles.trainerCard}>
             <View style={styles.containerImage_Name}>
                 <Icon name="user-o" size={24} style={styles.iconImage} color="#fff" />
-              <Text style={styles.trainerName}>{trainer.item.nombres + ' '+ trainer.item.apellidos}</Text>
+              <Text style={styles.trainerName}>{user.item.email_usuario}</Text>
             </View>
             <View style={styles.containerDescription}>
               <Text style={styles.description}>
@@ -66,6 +64,15 @@ const TrainerCard = ({trainer, navigation}) => {
                 with the release of Letraset sheets containing Lorem Ipsum passages, and more
                 recently with desktop publishing software like Aldus PageMaker including 
                 versions of Lorem Ipsum
+              </Text>
+              <Text style={styles.description}>
+                estado: {user.item.estado_subscripcion}
+              </Text>
+              <Text style={styles.description}>
+                fecha inscripcion: {user.item.fecha_subscripcion.slice(0,10)}
+              </Text>
+              <Text style={styles.description}>
+  
               </Text>
             </View>
             <View style={styles.containerContactInformation}>
@@ -160,4 +167,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TrainerCard;
+export default CardUser;

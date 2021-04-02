@@ -9,3 +9,63 @@ export const saveUser = (user) => {
         }
     }
 }
+
+export const saveTrainer = (trainer) => {
+
+    return {
+        type: types.saveTrainer,
+        payload: {
+            trainer
+        }
+    }
+}
+
+export const T_saveTrainer = (T_trainer) => {
+
+    return {
+        type: types.T_saveTrainer,
+        payload: {
+            T_trainer
+        }
+    }
+}
+
+export const T_saveUser = (T_user) => {
+
+    return {
+        type: types.T_saveUser,
+        payload: {
+            T_user
+        }
+    }
+}
+
+export const saveSubCategorie = (subCategorie) => {
+
+    return {
+        type: types.saveSubCategorie,
+        payload: {
+            subCategorie
+        }
+    }
+}
+
+export const saveSubRoutine = (subRoutine) => {
+
+    return {
+        type: types.saveSubRoutine,
+        payload: {
+            subRoutine
+        }
+    }
+}
+
+export const saveCurrentRoutine = (currentRoutine) => {
+
+    return {
+        type: types.currentRoutine,
+        payload: {
+            currentRoutine
+        }
+    }
+}

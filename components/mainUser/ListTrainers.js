@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   StyleSheet,
   View,
@@ -20,13 +20,20 @@ import { Button, Paragraph, Dialog, Portal } from 'react-native-paper';
 
 import TopBar from '../compartido/TopBar';
 
+import { useDispatch, useSelector } from 'react-redux';
+
 import { createDrawerNavigator } from '@react-navigation/drawer';
 
 import SideBarUser from '../compartido/SideBarUser';
 import TrainerCard from './listTrainersComponents/TrainerCard';
 import BottomBar from '../compartido/BottomBar';
 
+import Colors from '../../colors/colors';
+
 import { urlServer } from '../../services/urlServer';
+
+import { saveTrainer } from '../../store/actions/actionsReducer';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const Drawer = createDrawerNavigator();
 
@@ -43,24 +50,103 @@ export default function ListTrainers() {
 
 const ListTrainersScreen = ({navigation}) => {
 
-  console.log('url', urlServer.url);
-
   const serverUrl = urlServer.url;
 
   const [trainersLoaded, setTrainersLoaded] = useState(false);
   const [listTrainers, setlistTrainers] = useState([]);
+  const [myTrainers, setMyTrainers] = useState(false);
 
-  console.log('hola');
+  const dispatch = useDispatch();
+  const userInformation = useSelector(state => state.user);
 
-  if(!trainersLoaded)
-  {
+  useEffect(() => {
+    
+    loadFirstTrainers();
+    
+  }, []);
+
+
+
+  const loadFirstTrainers = async() => {
+
+
+      if(!myTrainers)
+      {
+        axios({
+          method: 'get',
+          url: `${serverUrl}/userscreens/getlistgeneraltrainers`,
+        })
+        .then(function (response) {
+          setlistTrainers(response.data.resp);
+          setTrainersLoaded(true);
+        })
+        .catch(function (error) {
+            console.log('error axios',error);
+        });
+      }
+      else{
+
+          try {
+            const res = await axios({method: 'get',url: `${serverUrl}/relations/getmytrainers/${userInformation.email}`});
+            //console.log(res.data.resp);
+            //setlistTrainers(response.data.resp);
+            const trainers = res.data.resp;
+            let auxtrainers;
+            let trainersList = [];
+           
+            for(let i = 0; i < trainers.length; i++)
+            {
+              auxtrainers = await axios({method: 'get',url: `${serverUrl}/relations/searchforatrainer/${trainers[i].email_entrenador}`});
+              trainersList[i] = auxtrainers.data.resp[0];
+            }
+
+            setlistTrainers(trainersList);
+            setTrainersLoaded(true);
+          } catch (error) {
+            console.log(error);        
+          }
+          //setlistTrainers(response.data.resp);
+          //setTrainersLoaded(true);
+      }
+
+  }
+
+  const ListMyTrainers = async() => {
+    try {
+      const res = await axios({method: 'get',url: `${serverUrl}/relations/getmytrainers/${userInformation.email}`});
+      //console.log(res.data.resp);
+      //setlistTrainers(response.data.resp);
+      const trainers = res.data.resp;
+      let auxtrainers;
+      let trainersList = [];
+     
+      for(let i = 0; i < trainers.length; i++)
+      {
+        auxtrainers = await axios({method: 'get',url: `${serverUrl}/relations/searchforatrainer/${trainers[i].email_entrenador}`});
+        trainersList[i] = auxtrainers.data.resp[0];
+      }
+
+      setlistTrainers(trainersList);
+      setTrainersLoaded(true);
+    } catch (error) {
+      console.log(error);        
+    }
+  }
+
+
+
+  const myTrainersList = () => {
+    setMyTrainers(true);
+    ListMyTrainers();
+  }
+
+
+  const allTrainers = () => {
     axios({
       method: 'get',
       url: `${serverUrl}/userscreens/getlistgeneraltrainers`,
     })
     .then(function (response) {
-  
-
       setlistTrainers(response.data.resp);
       setTrainersLoaded(true);
     })
@@ -69,13 +155,26 @@ const ListTrainersScreen = ({navigation}) => {
     });
   }
 
+  const allTrainersList = () => {
+    setMyTrainers(false);
 
+    allTrainers();
+  }
 
+  console.log('state');
   return (
     <>
       <View style={styles.containerListTrainers}>
         <TopBar navigation={navigation} title={`Lista de entrenadores`} returnButton={true} />
-        
+        <View style={styles.containerButtons}>
+          <TouchableOpacity style={myTrainers ? styles.button : styles.buttonPressed } onPress={allTrainersList}>
+            <Text style={styles.textButton}>Todos los entrenadores</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={!myTrainers ? styles.button : styles.buttonPressed } onPress={myTrainersList}>
+            <Text style={styles.textButton}>Mis entrenadores</Text>
+          </TouchableOpacity>
+        </View>
+
         <View style={{ flex:1}}>
             {(() => { 
 
@@ -85,9 +184,18 @@ const ListTrainersScreen = ({navigation}) => {
                 <View>
                   <FlatList
                     data={listTrainers}
-                    renderItem= { (trainer) => (
-                      <TrainerCard trainer={trainer} navigation={navigation}/>
-                    ) }
+                    renderItem= { (trainer) => 
+                    {
+                      return( ()=> {
+   
+                        return(
+                          <>      
+                            <TrainerCard trainer={trainer} navigation={navigation}/>
+                          </>
+                        );
+                      })()
+                    }
+                    }
                     keyExtractor= {(trainer, key) => key}
                   />
                 </View>
@@ -114,5 +222,37 @@ const styles = StyleSheet.create({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center'
-  }
+  },
+
+  // buttons
+  containerButtons: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    paddingVertical: 5,
+    width: '100%'
+  },
+  button: {
+    backgroundColor: Colors.Orange,
+    paddingVertical: 8,
+    paddingHorizontal: 5,
+    borderBottomRightRadius: 5,
+    borderBottomLeftRadius: 5,
+    borderTopLeftRadius: 5,
+    borderTopRightRadius: 5
+  },
+  buttonPressed:{
+    backgroundColor: '#dd5d00',
+    paddingVertical: 8,
+    paddingHorizontal: 5,
+    borderBottomRightRadius: 5,
+    borderBottomLeftRadius: 5,
+    borderTopLeftRadius: 5,
+    borderTopRightRadius: 5
+  },
+  textButton: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#fff'
+  },
 });

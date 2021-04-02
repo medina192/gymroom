@@ -19,41 +19,41 @@ import axios from 'axios';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { useDispatch, useSelector } from 'react-redux';
 
-import ImageSlider from './ImageSlider';
+import ImageSlider from '../ImageSlider';
 
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Button, Paragraph, Dialog, Portal } from 'react-native-paper';
-import TopBar from '../compartido/TopBar';
+import TopBar from '../../compartido/TopBar';
 import { NavigationContainer } from '@react-navigation/native';
 
 import * as Keychain from 'react-native-keychain';
 
-import Colors from '../../colors/colors';
-import SideBarUser from '../compartido/SideBarUser';
-import BottomBar from '../compartido/BottomBar';
+import Colors from '../../../colors/colors';
+import SideBarUser from '../../compartido/SideBarUser';
+import BottomBar from '../../compartido/BottomBar';
 
-import { saveUser } from '../../store/actions/actionsReducer';
+import { saveUser } from '../../../store/actions/actionsReducer';
 
-import { urlServer } from '../../services/urlServer';
+import { urlServer } from '../../../services/urlServer';
 
 const Drawer = createDrawerNavigator();
 
-export default function MainUserScreen({navigation}) {
+export default function MainUserGeneralScreen({navigation}) {
   return (
     <>
       <Drawer.Navigator drawerContent={(navigation) => <SideBarUser {...navigation} />}>
-        <Drawer.Screen name="UserScreen" component={UserScreen} />
+        <Drawer.Screen name="UserGeneralScreen" component={UserGeneralScreen} />
       </Drawer.Navigator>
     </>
   );
 }
 
-const UserScreen = ({navigation}) => {
+const UserGeneralScreen = ({navigation}) => {
 
   const dispatch = useDispatch();
+  /*const user = useSelector(state => state.user);*/
+  
 
-
-  console.log(new Date().getDate());
 
   useEffect(() => {
     //dispatch(saveUser({nombre: 'alejandro'}));
@@ -64,44 +64,9 @@ const UserScreen = ({navigation}) => {
   }
 
   const openMenu = () => {
+    console.log('drawer');
     navigation.openDrawer();
   }
-  /*
-  const date = new Date();
-
-  const year = date.getFullYear();
-  const month = date.getMonth();
-  const day = date.getDate();
-
-  const c = new Date(year + 1, month, day) // PLUS 1 YEAR
-  const d = new Date(year, month + 1, day) // PLUS 1 MONTH
-  const f = new Date(year, month, day  + 8) // PLUS 1 DAY
-
-  console.log('day', day);
-  console.log('month', month);
-  console.log('year', year);
-  console.log('c', c);
-  console.log('d', d);
-  console.log('f', f);
-  console.log('date', date);
-  console.log('mysql date', f.toISOString());
-  const a = f.toISOString();
-  console.log('r', a.slice(0,10));
-  console.log('to', Date('2020-02-01'));
-
-  const date1 = new Date('2020-04-05');
-  console.log(date1.getTime());
-  const date2 = new Date('2020-02-05');
-  console.log(date2.getTime());
-
-  if(date1 > date2)
-  {
-    console.log('if');
-  }
-  else{
-    console.log('else');
-  }
-*/
 
 /*
   const proof = async() => {
@@ -136,33 +101,43 @@ const UserScreen = ({navigation}) => {
         <TopBar navigation={navigation} title={`Bienvenido Usuario`} returnButton={false} />
         <ScrollView style={styles.containerScrollView}>
           <ImageSlider />          
-
           <View style={styles.containerTextDescriptionButton}>
-            <Text style={styles.textDescriptionButton}>Conitnua con tu rutina del día de hoy</Text>
-            <Text style={styles.textDescriptionButtonSubtitle}>La disciplina es lo más importante</Text>
+            <Text style={styles.textDescriptionButton}>Comienza ya¡</Text>
           </View>
           <View style={styles.containerTouchableImage}>
             <TouchableOpacity style={styles.touchableContainerImage}
-              onPress={() => changeUserScreen('CustomPlan')} >
-              <ImageBackground source={ require('../../assets/img/_3.jpg')} style={styles.imageButton}>
-                <Text style={styles.textImageButton}>Plan personalizado</Text>
+              onPress={() => changeUserScreen('Routines')} >
+              <ImageBackground source={ require('../../../assets/img/4.jpg')} style={styles.imageButton}>
+                <Text style={styles.textImageButton}>Rutinas</Text>
               </ImageBackground>
             </TouchableOpacity>
           </View>
     
           <View style={styles.containerTextDescriptionButton}>
-            <Text style={styles.textDescriptionButton}>Cada día se agregan nuevos entrenadores</Text>
-            <Text style={styles.textDescriptionButtonSubtitle}>Conoce nuevos entrenadores</Text>
+            <Text style={styles.textDescriptionButton}>¿No sabes por donde comenzar?</Text>
+            <Text style={styles.textDescriptionButtonSubtitle}>Conoce a nuestros entrenadores para que te guien</Text>
           </View>
           <View style={styles.containerTouchableImage}>
             <TouchableOpacity style={styles.touchableContainerImage}
               onPress={() => changeUserScreen('ListTrainers')} >
-              <ImageBackground source={ require('../../assets/img/_1.jpg')} style={styles.imageButton}>
+              <ImageBackground source={ require('../../../assets/img/_1.jpg')} style={styles.imageButton}>
                 <Text style={styles.textImageButton}>Entrenadores</Text>
               </ImageBackground>
             </TouchableOpacity>
           </View>
-
+    
+          <View style={styles.containerTextDescriptionButton}>
+            <Text style={styles.textDescriptionButton}>¿Deseas entrenar a tu manera?</Text>
+            <Text style={styles.textDescriptionButtonSubtitle}>Crea tu plan personalizado</Text>
+          </View>
+          <View style={styles.containerTouchableImage}>
+            <TouchableOpacity style={styles.touchableContainerImage}
+              onPress={() => changeUserScreen('CustomPlan')} >
+              <ImageBackground source={ require('../../../assets/img/_3.jpg')} style={styles.imageButton}>
+                <Text style={styles.textImageButton}>Plan personalizado</Text>
+              </ImageBackground>
+            </TouchableOpacity>
+          </View>
           <View style={styles.containerTextDescriptionButton}>
             <Text style={styles.textDescriptionButton}>¿Cuanto eh mejorado?</Text>
             <Text style={styles.textDescriptionButtonSubtitle}>Registra tu progreso</Text>
@@ -170,26 +145,11 @@ const UserScreen = ({navigation}) => {
           <View style={styles.containerTouchableImage}>
             <TouchableOpacity style={styles.touchableContainerImage}
               onPress={() => changeUserScreen('Statistics')} >
-              <ImageBackground source={ require('../../assets/img/_4.jpg')} style={styles.imageButton}>
+              <ImageBackground source={ require('../../../assets/img/_4.jpg')} style={styles.imageButton}>
                 <Text style={styles.textImageButton}>Estadísticas</Text>
               </ImageBackground>
             </TouchableOpacity>
           </View>
-
-          <View style={styles.containerTextDescriptionButton}>
-            <Text style={styles.textDescriptionButton}>Crear rutinas</Text>
-          </View>
-          <View style={styles.containerTouchableImage}>
-            <TouchableOpacity style={styles.touchableContainerImage}
-              onPress={() => changeUserScreen('Routines')} >
-              <ImageBackground source={ require('../../assets/img/4.jpg')} style={styles.imageButton}>
-                <Text style={styles.textImageButton}>Rutinas</Text>
-              </ImageBackground>
-            </TouchableOpacity>
-          </View>
-    
-
-
 
           <View style={styles.containerButtonSubscribe}>
             <TouchableOpacity style={styles.buttonSubscribe} onPress={ () => navigation.navigate('MainTrainerScreen')}>

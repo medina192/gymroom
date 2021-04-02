@@ -58,7 +58,7 @@ import * as Keychain from 'react-native-keychain';
 const MessageUser = ({navigation, route}) => {
 
 
-  const trainerInformation = route.params.trainer;
+  //const trainerInformation = route.params.trainer;
 
   const serverUrl = urlServer.url;
 
@@ -75,6 +75,7 @@ const MessageUser = ({navigation, route}) => {
   const [state, setState] = useState(false);
 
   const userInformation = useSelector(state => state.user);
+  const trainerInformation = useSelector(state => state.trainer);
 
   useEffect(() => {
     loadMessages();
