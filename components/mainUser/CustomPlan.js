@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   StyleSheet,
   View,
@@ -39,6 +39,36 @@ export default function CustomPlan() {
 
 const CustomPlanScreen = ({navigation}) => {
 
+  /*
+  useEffect(() => {
+    
+    getRoutines();
+  }, []);
+
+  const getRoutines = () => {
+
+    axios({
+      method: 'get',
+      url: `${serverUrl}/relations/getroutines/${idRelation}`,
+    })
+    .then(function (response) {
+        console.log('routine',response.data.resp);
+        
+        if(response.data.resp.length > 0)
+        {
+          const routinesString = response.data.resp;
+          
+          let r = JSON.parse(response.data.resp[0].rutinas);
+          console.log('ey',r[0]);
+          setRoutines(routinesString);
+        }
+
+    })
+    .catch(function (error) {
+        console.log('error get routines  axios',error);
+    });
+  }
+*/
   return (
     <>
       <TopBar navigation={navigation} title={`Mi plan personalizado`} returnButton={true} />

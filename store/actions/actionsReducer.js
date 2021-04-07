@@ -69,3 +69,24 @@ export const saveCurrentRoutine = (currentRoutine) => {
         }
     }
 }
+
+export const saveIdRelation = (idRelation) => {
+
+    return {
+        type: types.idRelation,
+        payload: {
+            idRelation
+        }
+    }
+}
+
+
+export const saveRoutine_T = (routine) => {
+
+    return {
+        type: types.T_routinesSaved,
+        payload: {
+            routine
+        }
+    }
+}

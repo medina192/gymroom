@@ -26,6 +26,8 @@ import * as Keychain from 'react-native-keychain';
 
 const SaveSessionQuestion = ({navigation, route}) => {
 
+    console.log('rout', route.params.rol);
+    const rol = route.params.rol;
     const dispatch = useDispatch();
 
     const [isEnabled, setIsEnabled] = useState(false);
@@ -33,29 +35,33 @@ const SaveSessionQuestion = ({navigation, route}) => {
       setIsEnabled(previousState => !previousState);
     };
 
-    const generateSecureStorage = async(user, rol) => {
+    const userClient = useSelector(state => state.user);
+    const trainer = useSelector(state => state.T_trainer);
+
+
+    const generateSecureStorage = async(user) => {
         const userString = JSON.stringify(user);
         const username = userString;
-        const password = rol;
-      
+        const password = rol.toString();
+
         try {
               // Store the credentials
           await Keychain.setGenericPassword(username, password);
     
           if(isEnabled){
               if(route.params.role === 'MainUserScreen'){
-                const data = {
-                    nombres: route.params.user.nombres,
-                }
-                useDispatch(saveUser(route.params.user));
-                navigation.navigate('MainUserScreen',data);
+                //const data = {
+                  //  nombres: route.params.user.nombres,
+                //}
+                //useDispatch(saveUser(route.params.user));
+                navigation.navigate('MainUserScreen');
               }
               else{
-                const data = {
-                    nombres: route.params.user.nombres,
-                }
-                useDispatch(saveUser(route.params.user));
-                navigation.navigate('MainTrainerScreen', data);
+                //const data = {
+                  //  nombres: route.params.user.nombres,
+                //}
+                //useDispatch(saveUser(route.params.user));
+                navigation.navigate('MainTrainerScreen');
               }
             }
     
@@ -68,23 +74,27 @@ const SaveSessionQuestion = ({navigation, route}) => {
 
     const goToTheNextScreen = async() => {
         
+      
         if(isEnabled)
         {
             if(route.params.role === 'MainUserScreen')
             {
               console.log('user');
-              generateSecureStorage(route.params.user, '1');
+              generateSecureStorage(userClient);
               //navigation.navigate('MainUserScreen');
             }
             else{
               console.log('trainer');
-              generateSecureStorage(route.params.user, '2');
+              generateSecureStorage(trainer);
               //navigation.navigate('MainTrainerScreen');
             }
         }
         else{
             navigation.navigate(route.params.role);
         }
+        
+
+
     }
 
     return(

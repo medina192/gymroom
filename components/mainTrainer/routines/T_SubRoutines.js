@@ -65,21 +65,33 @@ const T_SubRoutinesScreen = ({navigation}) => {
 
   const dispatch = useDispatch();
   const subRoutine = useSelector(state => state.subRoutine);
-  const trainer = useSelector(state => state.T_trainer);
+  const idRelation = useSelector(state => state.idRelation);
   const user = useSelector(state => state.T_user);
+ 
+
 
   const [checkboxValue, setCheckBoxValue] = useState(false);
   const [message, setMessage] = useState('');
-  //const [arrayP, setarrayP] = useState([{s: false},{s:false}])
-  //const [userInformation, setUserInformation] = useState({});
-  //const [userInformationLoaded, setUserInformationLoaded] = useState(false);
-  //const [messagesLoaded, setMessagesLoaded] = useState(false);
+
+  const clearCheckBoxes = () => {
+
+    for(let i = 0; i < routines.length; i++)
+    {
+      routines[i].selected = false;
+    }
+  }
+
+  useEffect(() => {
+    clearCheckBoxes();
+  }, []);
+
+
 
   const [state, setState] = useState(false);
   const [routines, setRoutines] = useState(subRoutine.routines);
 
-  const userInformation = useSelector(state => state.user);
-  const trainerInformation = useSelector(state => state.trainer);
+  //const userInformation = useSelector(state => state.user);
+  //const trainerInformation = useSelector(state => state.trainer);
 
 
   const changeToRoutine = (routine) => {
@@ -95,7 +107,7 @@ const T_SubRoutinesScreen = ({navigation}) => {
   }
 
   const saveRoutine = () => {
-    console.log('save', routines);
+    
     let routinesSelected = [];
     for(let i = 0; i< routines.length; i++)
     {
@@ -109,8 +121,7 @@ const T_SubRoutinesScreen = ({navigation}) => {
 
     const auxObject = {
       rutinas: routinesString,
-      email_usuario: user.email_usuario,
-      email_entrenador: user.email_entrenador
+      id_relacion_entrenador_usuario: idRelation
     };
 
     axios({
@@ -120,6 +131,8 @@ const T_SubRoutinesScreen = ({navigation}) => {
     })
     .then(function (response) {
         console.log('routine',response);
+        clearCheckBoxes();
+        navigation.navigate('ListUsers');
     })
     .catch(function (error) {
         console.log('error axios',error);

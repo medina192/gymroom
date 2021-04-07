@@ -50,6 +50,7 @@ const TrainerScreen = ({navigation}) => {
     navigation.navigate(newScreen);
   }
   const T_trainer = useSelector(state => state);
+
   /*
 
   const proof = async() => {

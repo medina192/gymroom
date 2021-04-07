@@ -27,7 +27,7 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 
 import { urlServer } from '../../services/urlServer';
 
-import { T_saveUser } from '../../store/actions/actionsReducer';
+import { T_saveUser, saveIdRelation } from '../../store/actions/actionsReducer';
 
 
 const CardUser = ({user, navigation}) => {
@@ -37,12 +37,10 @@ const CardUser = ({user, navigation}) => {
   const dispatch = useDispatch();
 
 
-  const changeToMessageScreen = () => {
 
-    
-  }
 
   const watchProfile = () => {
+    dispatch(saveIdRelation(user.item.id_relacion_entrenador_usuario));
     dispatch(T_saveUser(user.item));
     navigation.navigate('UserProfile');
   }

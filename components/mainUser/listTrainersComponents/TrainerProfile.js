@@ -29,6 +29,8 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import TopBar from '../../compartido/TopBar';
 import BottomBar from '../../compartido/BottomBar';
 
+import { saveIdRelation } from '../../../store/actions/actionsReducer';
+
 import { urlServer } from '../../../services/urlServer';
 
 const Drawer = createDrawerNavigator();
@@ -47,15 +49,13 @@ const TrainerProfileScreen = ({navigation}) => {
 
   const serverUrl = urlServer.url;
 
+  const dispatch = useDispatch();
+
   const [userSubscribed, setUserSubscribed] = useState({
     state_subscription: 0,
     userSubscribedStatus: false
   });  
   const [disabled, setDisabled] = useState(false);
-
-  const verifyUserSubscribed = () => {
-
-  }
 
   useEffect(() => {
     verifyRelation();
@@ -72,7 +72,8 @@ const TrainerProfileScreen = ({navigation}) => {
       if(response.data.resp.length > 0)
       {
         const statusSubscription =  response.data.resp[0].estado_subscripcion;
-        const currentDate = new Date('2021-05-30');
+        //const currentDate = new Date('2021-03-30');
+        const currentDate = new Date();
         const dbDate = response.data.resp[0].fecha_subscripcion;
 
         const subscriptionDate = new Date(dbDate.slice(0,10));
@@ -81,7 +82,8 @@ const TrainerProfileScreen = ({navigation}) => {
         const day = subscriptionDate.getDate();
         const datePlus30 = new Date(year, month, day  + 30) // PLUS 30 DAY
         const relationInfo =  response.data.resp[0];
-        
+
+        dispatch(saveIdRelation(response.data.resp[0].id_relacion_entrenador_usuario));
 
         if(currentDate.getTime() > datePlus30.getTime())
         {
@@ -111,6 +113,10 @@ const TrainerProfileScreen = ({navigation}) => {
         }
         else{
           console.log('else');
+          setUserSubscribed({
+            state_subscription: 1,
+            userSubscribedStatus: true
+          });
         }
       }
     })
@@ -119,11 +125,12 @@ const TrainerProfileScreen = ({navigation}) => {
     });
   }
 
-  const dispatch = useDispatch();
 
   const trainer = useSelector(state => state.trainer);
   const user = useSelector(state => state.user);
 
+ console.log('trainer', trainer);
+ console.log('user', user);
 
 
   const subscribe = () => {
@@ -135,6 +142,8 @@ const TrainerProfileScreen = ({navigation}) => {
       method: 'post',
       url: `${serverUrl}/relations/registerRelation`,
       data: {
+        idUsuario: user.idusuario,
+        idEntrenador: trainer.idusuario,
         email_usuario: user.email,
         email_entrenador: trainer.email,
         email_usuario_entrenador: `${user.email+trainer.email}`,
@@ -183,7 +192,7 @@ const TrainerProfileScreen = ({navigation}) => {
         console.log('error axios',error);
     });
   }
-  console.log('dis', disabled)
+
   return (
     <>
        <TopBar navigation={navigation} title={trainer.nombres} returnButton={true}/>

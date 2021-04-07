@@ -5,5 +5,7 @@ export const types = {
     T_saveUser: 'T_saveUser',
     saveSubCategorie: 'saveSubCategorie',
     saveSubRoutine: 'saveSubRoutine',
-    currentRoutine: 'currentRoutine'
+    currentRoutine: 'currentRoutine',
+    idRelation: 'idRelation',
+    T_routinesSaved: 'T_routinesSaved'
 }

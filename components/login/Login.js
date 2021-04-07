@@ -50,7 +50,7 @@ const Login = ({navigation}) => {
       const credentials = await Keychain.getGenericPassword();
       if (credentials) {
         const userObject = JSON.parse(credentials.username);
-
+        console.log('password', credentials.password);
         if(credentials.password == '1')
         {
           dispatch(saveUser(userObject));
@@ -160,6 +160,9 @@ const Login = ({navigation}) => {
         data: bodyUser
       })
       .then(function (response) {
+        const userString = JSON.stringify(response.data.resp[0]);
+        const userObject = JSON.parse(userString);
+        /*
           console.log('good, user logged',response.data.resp[0].role);
           const userString = JSON.stringify(response.data.resp[0]);
           const userObject = JSON.parse(userString);
@@ -194,6 +197,49 @@ const Login = ({navigation}) => {
               navigation.navigate('MainTrainerScreen');
             }
           }
+          */
+          const auxIdusuario = response.data.resp[0].idusuario;
+          axios({
+            method: 'get',
+            url: `${serverUrl}/auth/getRol/${auxIdusuario}`
+          }).then((resp) => {
+            console.log(resp.data.resp[0].idrol);
+
+            if(isEnabled)
+            {
+              if(resp.data.resp[0].idrol == 1)
+              {
+                console.log('user');
+  
+                dispatch(saveUser(userObject));
+                generateSecureStorage(userString, '1');
+                //navigation.navigate('MainUserScreen');
+              }
+              else{
+                console.log('trainer');
+  
+                dispatch(T_saveTrainer(userObject));
+                generateSecureStorage(userString, '2');
+                //navigation.navigate('MainTrainerScreen');
+              }
+            }
+            else{
+              if(resp.data.resp[0].idrol == 1)
+              {
+  
+                dispatch(saveUser(userObject));
+                navigation.navigate('MainUserScreen');
+              }
+              else{
+  
+                dispatch(T_saveTrainer(userObject));
+                navigation.navigate('MainTrainerScreen');
+              }
+            }
+          })
+          .catch((error) => {
+
+          });
       })
       .catch(function (error) {
           console.log('error axios',error);
@@ -216,7 +262,7 @@ const Login = ({navigation}) => {
     console.log('sign');
     try {
       const t = await GoogleSignin.hasPlayServices();
-      console.log('t',t);
+      
       const userInfo = await GoogleSignin.signIn();
 
       console.log('userinfo',userInfo);

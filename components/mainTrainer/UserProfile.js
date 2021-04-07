@@ -29,6 +29,8 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import TopBar from '../compartido/TopBar';
 import BottomBar from '../compartido/BottomBar';
 
+import { saveIdRelation } from '../../store/actions/actionsReducer';
+
 import { urlServer } from '../../services/urlServer';
 
 const Drawer = createDrawerNavigator();
@@ -52,43 +54,59 @@ const UserProfileScreen = ({navigation}) => {
     userSubscribedStatus: false
   });  
 
+  const [routines, setRoutines] = useState([]);
+
   const trainer = useSelector(state => state.T_trainer);
   const user = useSelector(state => state.T_user);
-  const state = useSelector(state => state);
-
+  const idRelation = useSelector(state => state.idRelation);
+  console.log('userk', user);
   useEffect(() => {
     verifyRelation();
-    getRoutines();
+    
   }, []);
 
   const getRoutines = () => {
-    
+    console.log('id', idRelation);
     axios({
       method: 'get',
-      url: `${serverUrl}/relations/getroutines/email_usuario=${user.email_usuario}`,
+      url: `${serverUrl}/relations/getroutines/${idRelation}`,
     })
     .then(function (response) {
-        console.log('routine',response);
+        console.log('routine',response.data.resp);
+        
+        if(response.data.resp.length > 0)
+        {
+          const routinesString = response.data.resp;
+          
+          let r = JSON.parse(response.data.resp[0].rutinas);
+          console.log('ey',r[0]);
+          setRoutines(routinesString);
+        }
+
     })
     .catch(function (error) {
-        console.log('errorget routines  axios',error);
+        console.log('error get routines  axios',error);
     });
   }
 
   const verifyRelation = () => {
+ 
     axios({
       method: 'get',
-      url: `${serverUrl}/relations/getrelation/${user.email}${trainer.email}`,
+      url: `${serverUrl}/relations/getrelation/${user.email_usuario+trainer.email}`,
     })
     .then(function (response) {
 
       if(response.data.resp.length > 0)
       {
         const statusSubscription =  response.data.resp[0].estado_subscripcion;
+        
         setUserSubscribed({
           state_subscription: statusSubscription,
           userSubscribedStatus: true
         });
+        dispatch(saveIdRelation(response.data.resp[0].id_relacion_entrenador_usuario));
+        getRoutines();
       }
     })
     .catch(function (error) {
@@ -99,7 +117,7 @@ const UserProfileScreen = ({navigation}) => {
   const dispatch = useDispatch();
 
 
-
+/*
   const subscribe = () => {
     const dateSubscription = new Date();
     const dateShortFormat = dateSubscription.toISOString();
@@ -119,25 +137,27 @@ const UserProfileScreen = ({navigation}) => {
     .then(function (response) {
       //console.log('response', response.data);
       verifyRelation();
-      /*
+      
       setUserSubscribed({
         state_subscription: 0,
         userSubscribedStatus: true
       });
-      */
+      
     })
     .catch(function (error) {
         console.log('error subscribe axios',error);
     });
   }
-
+*/
   const sendMessage = () => {
-    navigation.navigate('MessageUser');
+    navigation.navigate('MessageTrainer');
   }
 
   const createNewRoutine = () => {
+    dispatch(saveIdRelation(user.id_relacion_entrenador_usuario));
     navigation.navigate('Routines');
   } 
+
 
   return (
     <>
@@ -161,9 +181,6 @@ const UserProfileScreen = ({navigation}) => {
           
               <View style={styles.containerButtonSubscribe}>
                 <ScrollView>
-                  {
-
-                  }
                   <TouchableOpacity style={styles.buttonSubscribe} onPress={ sendMessage }>
                     <Text style={styles.textButoonSubscribe}>Enviar Mensaje</Text>
                   </TouchableOpacity>
@@ -178,7 +195,34 @@ const UserProfileScreen = ({navigation}) => {
                 </View>
               </View>
 
-
+              <Text>Rutinas</Text>
+              <ScrollView>
+                <View>
+                {
+                  (routines.length > 0) ?
+                  
+                    
+                      routines.map((routine) => {
+                        let routineObject = JSON.parse(routine.rutinas);
+                        return(
+                          <View style={styles.routineCard}>
+                             {
+                               routineObject.map((rutina) => (
+                                 <Text style={styles.textRoutineCard}>{rutina.name}</Text>
+                               ))
+                             }
+                          </View>
+                        )
+                       })
+                    
+                  
+                  :
+                  (
+                    <Text></Text>
+                  )
+                }
+                </View>
+              </ScrollView>
 
 
         </View>
@@ -241,6 +285,21 @@ const styles = StyleSheet.create({
     containerRoutines:{
       flex: 1,
     },  
+
+    routineCard:{
+      marginVertical: 10,
+      backgroundColor: Colors.MainBlue,
+      paddingVertical: 7,
+      paddingHorizontal: 10,
+      borderTopLeftRadius: 10,
+      borderTopRightRadius: 10,
+      borderBottomLeftRadius: 10,
+      borderBottomRightRadius: 10,
+    },
+    textRoutineCard:{
+      color: '#fff',
+      fontSize: 16
+    },
 
     // button subscribe
   containerButtonSubscribe:{

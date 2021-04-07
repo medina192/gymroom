@@ -76,6 +76,7 @@ const MessageUser = ({navigation, route}) => {
 
   const userInformation = useSelector(state => state.user);
   const trainerInformation = useSelector(state => state.trainer);
+  const idRelation = useSelector(state => state.idRelation);
 
   useEffect(() => {
     loadMessages();
@@ -115,8 +116,7 @@ const MessageUser = ({navigation, route}) => {
      setMessage('');
      axios({
         method: 'get',
-        url: `${serverUrl}/userscreens/getmessages/${userInformation.email}${trainerInformation.email}`,
-
+        url: `${serverUrl}/userscreens/getmessages/${idRelation}`,
       })
       .then(function (response) {
         //console.log('resp messages',response);
@@ -168,9 +168,9 @@ const MessageUser = ({navigation, route}) => {
    {
     const objectMessages = JSON.stringify(listMessages);
     const bodyMessage = {
-      email_usuario: userInformation.email,
-      email_entrenador: trainerInformation.email,
-      email_usuario_entrenador: `${userInformation.email}${trainerInformation.email}`,
+      id_relacion_entrenador_usuario: idRelation,
+      idUsuario: userInformation.idusuario,
+      idEntrenador: trainerInformation.idusuario,
       mensajes_string: objectMessages,
       lengthMessages: listMessages.lengthOldMessages
     }

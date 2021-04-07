@@ -50,9 +50,7 @@ const Registro = ({navigation}) => {
     fecha_de_nacimiento: '',
     descripcion: '',
     cedula: '',
-    tipo_de_cuenta: '',
-    descripcion: '',
-    cedula: ''
+    tipo_de_cuenta: ''
   });
 
   useEffect(() => {
@@ -212,6 +210,7 @@ const Registro = ({navigation}) => {
 
 
   // Begin send form _______________________________
+  /*
   const sendForm = () => {
 
     if(!checkboxValue)
@@ -238,6 +237,7 @@ const Registro = ({navigation}) => {
               facebook: 0,
               estado: 0
             } 
+            console.log('bodyuse,', bodyUser);
             axios({
               method: 'post',
               url: `${serverUrl}/auth/register`,
@@ -257,7 +257,7 @@ const Registro = ({navigation}) => {
                   showDialogEmail();
                 }
                 else{
-                   console.log('serer error');
+                   console.log('server error');
                 }
             });
           }
@@ -313,7 +313,67 @@ const Registro = ({navigation}) => {
   }
 
 //  end save form ______________________________
+*/
 
+const sendForm = () => {
+
+
+    if(form.nombres && form.apellidos && form.email && form.password && form.confirmPassword
+      && form.fecha_de_nacimiento){
+      
+        if(form.password !== form.confirmPassword)
+        {
+          console.log('passwords are not equal');
+          showDialogPassword();
+          return;
+        }
+        else{
+
+          const bodyUser = {
+            nombres: form.nombres,
+            apellidos: form.apellidos,
+            email: form.email,
+            password: form.password,
+            fecha_de_nacimiento: form.fecha_de_nacimiento,
+            google: 0,
+            facebook: 0,
+            estado: 0,
+            idusuario: 0
+          } 
+          axios({
+            method: 'post',
+            url: `${serverUrl}/auth/register`,
+            data: bodyUser
+          })
+          .then(function (response) {
+              console.log('good, user registered',response);
+              bodyUser.idusuario = response.data.resp.insertId;
+              navigation.navigate('ChooseRole',bodyUser);
+              //dispatch(saveUser(bodyUser));
+              //navigation.navigate('SaveSessionQuestion');
+          })
+          .catch(function (error) {
+              //console.log('res', error.response.data.sqlMessage);
+              if(error.response?.data.sqlMessage)
+              {
+                console.log('hi',error.response?.data.sqlMessage);
+                console.log('email already exists');
+                showDialogEmail();
+              }
+              else{
+                 console.log('server error');
+              }
+          });
+
+        }
+    }
+    else{
+      console.log('dialog');
+      showDialog();
+    }
+}
+
+//  end save form ______________________________
 
   const hideKeyBoard = () => {
     Keyboard.dismiss();
@@ -399,26 +459,32 @@ const Registro = ({navigation}) => {
               onConfirm={handleConfirm}
               onCancel={hideDatePicker}
             />
-            <Text style={styles.typeAccounText}>Selecciona tu tipo de cuenta</Text>
             
-            <View style={styles.containerCheckBox1}>
-              <CheckBox
-              disabled={false}
-              value={!checkboxValue}
-              onValueChange={() => setCheckBoxValue(!checkboxValue)}
-              />
-              <Text style={styles.textCheckbox}>Usuario</Text>
-            </View>
-            <View style={styles.containerCheckBox2}>
-              <CheckBox
-              disabled={false}
-              value={checkboxValue}
-              onValueChange={() => setCheckBoxValue(!checkboxValue)}
-              />
-              <Text style={styles.textCheckbox}>Entrenador</Text>
-            </View>
+            {
+              /*
+                          <Text style={styles.typeAccounText}>Selecciona tu tipo de cuenta</Text>
+            
+                          <View style={styles.containerCheckBox1}>
+                            <CheckBox
+                            disabled={false}
+                            value={!checkboxValue}
+                            onValueChange={() => setCheckBoxValue(!checkboxValue)}
+                            />
+                            <Text style={styles.textCheckbox}>Usuario</Text>
+                          </View>
+                          <View style={styles.containerCheckBox2}>
+                            <CheckBox
+                            disabled={false}
+                            value={checkboxValue}
+                            onValueChange={() => setCheckBoxValue(!checkboxValue)}
+                            />
+                            <Text style={styles.textCheckbox}>Entrenador</Text>
+                          </View>
+            }
+
 
             {
+              /*
               checkboxValue ? 
               (
                 <TouchableWithoutFeedback onPress={hideKeyBoard}>
@@ -442,6 +508,7 @@ const Registro = ({navigation}) => {
                 </View>
               </TouchableWithoutFeedback>
               )  : null
+              */
             }
             
             {

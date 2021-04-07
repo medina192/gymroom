@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   StyleSheet,
   View,
@@ -11,9 +11,12 @@ import {
   Image,
   ScrollView,
   FlatList,
+  TouchableOpacity
 } from 'react-native';
 
 import axios from 'axios';
+
+import { useDispatch, useSelector } from 'react-redux';
 
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Button, Paragraph, Dialog, Portal } from 'react-native-paper';
@@ -22,28 +25,39 @@ import TopBar from '../compartido/TopBar';
 
 import { createDrawerNavigator } from '@react-navigation/drawer';
 
-import SideBarUser from '../compartido/SideBarUser';
+
 import BottomBar from '../compartido/BottomBar';
 
-import { useDispatch, useSelector } from 'react-redux';
 
-import { urlServer } from '../../services/urlServer';
+import Colors  from '../../colors/colors';
+
+import { saveUser } from '../../store/actions/actionsReducer';
 
 const Drawer = createDrawerNavigator();
 
-export default function MessageTrainer() {
+/*
+export default function MessageUser({navigation, route}) {
+
+
   return (
     <>
       <Drawer.Navigator drawerContent={(props) => <SideBarUser {...props} />}>
-        <Drawer.Screen name="MessageTrainer" component={MessageTrainerScreen} />
+        <Drawer.Screen name="MessageUser" component={(props) => <MessageUserScreen />} trainer={route.params.trainer}/>
       </Drawer.Navigator>
     </>
   );
 }
+*/
+
+import { urlServer } from '../../services/urlServer';
+
+import * as Keychain from 'react-native-keychain';
+//import { Colors } from 'react-native/Libraries/NewAppScreen';
+
+const MessageTrainer = ({navigation, route}) => {
 
 
-const MessageTrainerScreen = ({navigation}) => {
-
+  //const trainerInformation = route.params.trainer;
 
   const serverUrl = urlServer.url;
 
@@ -59,8 +73,12 @@ const MessageTrainerScreen = ({navigation}) => {
   });
   const [state, setState] = useState(false);
 
-  const userInformation = useSelector(state => state.user);
-  const trainerInformation = useSelector(state => state.trainer);
+  const userInformation = useSelector(state => state.T_user);
+  const trainerInformation = useSelector(state => state.T_trainer);
+  const idRelation = useSelector(state => state.idRelation);
+
+  const state1 = useSelector(state => state);
+
 
   useEffect(() => {
     loadMessages();
@@ -100,8 +118,7 @@ const MessageTrainerScreen = ({navigation}) => {
      setMessage('');
      axios({
         method: 'get',
-        url: `${serverUrl}/userscreens/getmessages/${userInformation.email}${trainerInformation.email}`,
-
+        url: `${serverUrl}/userscreens/getmessages/${idRelation}`,
       })
       .then(function (response) {
         //console.log('resp messages',response);
@@ -132,7 +149,7 @@ const MessageTrainerScreen = ({navigation}) => {
   const addNewMessage = (newMessage, lengthOldListMessages) => {
 
     const user_message = {
-      email_usuario: userInformation.email,
+      email_usuario: trainerInformation.email,
       message: newMessage
     }
     setListMessages({
@@ -153,9 +170,9 @@ const MessageTrainerScreen = ({navigation}) => {
    {
     const objectMessages = JSON.stringify(listMessages);
     const bodyMessage = {
-      email_usuario: userInformation.email,
-      email_entrenador: trainerInformation.email,
-      email_usuario_entrenador: `${userInformation.email}${trainerInformation.email}`,
+      id_relacion_entrenador_usuario: idRelation,
+      idUsuario: userInformation.idUsuario,
+      idEntrenador: trainerInformation.id,
       mensajes_string: objectMessages,
       lengthMessages: listMessages.lengthOldMessages
     }
@@ -194,13 +211,13 @@ const MessageTrainerScreen = ({navigation}) => {
     Keyboard.dismiss();
   }
 
-  console.log('list', listMessages);
+
 
   return (
     <>
       <TouchableWithoutFeedback onPress={hideKeyBoard}>
         <View style={styles.containerListTrainers}>
-          <TopBar navigation={navigation} title={trainerInformation.nombres} returnButton={true} />
+          <TopBar navigation={navigation} title={userInformation.email_usuario} returnButton={true} />
               {
                 !listMessages.messages.length === 0  ?
                 (
@@ -216,7 +233,7 @@ const MessageTrainerScreen = ({navigation}) => {
                             //console.log('message1', message.item);
                             //console.log('messag2',message.item.email_usuario);
                             //console.log('message3',userInformation.email);
-                            if(message.item.email_usuario == userInformation.email)
+                            if(message.item.email_usuario == trainerInformation.email)
                             {
                               //console.log('if');
                               return(
@@ -263,7 +280,6 @@ const MessageTrainerScreen = ({navigation}) => {
     </>
   );
 };
-
 
 const styles = StyleSheet.create({
   containerListTrainers:{
@@ -360,3 +376,5 @@ const styles = StyleSheet.create({
       fontWeight: '700'
     },
 });
+
+export default MessageTrainer;
