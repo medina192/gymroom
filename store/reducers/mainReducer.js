@@ -8,7 +8,9 @@ const initialState = {
     subRoutine: {},
     subCategorie: {},
     idRelation: 0,
-    routineT: []
+    routineT: [],
+    currentRoutine: {},
+    currentExercise: {}
 }
 
 export const mainReducer = (state = initialState, action) => {
@@ -48,6 +50,11 @@ export const mainReducer = (state = initialState, action) => {
             return{
                 ...state,
                 currentRoutine: action.payload.currentRoutine
+            }   
+        case types.currentExercise:
+            return{
+                ...state,
+                currentExercise: action.payload.currentExercise
             }    
         case types.idRelation:
             return{

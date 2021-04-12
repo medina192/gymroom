@@ -70,6 +70,16 @@ export const saveCurrentRoutine = (currentRoutine) => {
     }
 }
 
+export const saveCurrentExercise = (currentExercise) => {
+
+    return {
+        type: types.currentExercise,
+        payload: {
+            currentExercise
+        }
+    }
+}
+
 export const saveIdRelation = (idRelation) => {
 
     return {

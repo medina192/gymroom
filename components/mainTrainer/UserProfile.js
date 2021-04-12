@@ -59,11 +59,12 @@ const UserProfileScreen = ({navigation}) => {
   const trainer = useSelector(state => state.T_trainer);
   const user = useSelector(state => state.T_user);
   const idRelation = useSelector(state => state.idRelation);
-  console.log('userk', user);
+
   useEffect(() => {
     verifyRelation();
     
   }, []);
+
 
   const getRoutines = () => {
     console.log('id', idRelation);
@@ -78,9 +79,11 @@ const UserProfileScreen = ({navigation}) => {
         {
           const routinesString = response.data.resp;
           
-          let r = JSON.parse(response.data.resp[0].rutinas);
-          console.log('ey',r[0]);
+          
+          let r = JSON.parse(response.data.resp[0].ejercicios);
+
           setRoutines(routinesString);
+          
         }
 
     })
@@ -88,6 +91,8 @@ const UserProfileScreen = ({navigation}) => {
         console.log('error get routines  axios',error);
     });
   }
+
+
 
   const verifyRelation = () => {
  
@@ -203,9 +208,10 @@ const UserProfileScreen = ({navigation}) => {
                   
                     
                       routines.map((routine) => {
-                        let routineObject = JSON.parse(routine.rutinas);
+                        let routineObject = JSON.parse(routine.ejercicios);
                         return(
                           <View style={styles.routineCard}>
+                            <Text>{routine.nombre}</Text>
                              {
                                routineObject.map((rutina) => (
                                  <Text style={styles.textRoutineCard}>{rutina.name}</Text>

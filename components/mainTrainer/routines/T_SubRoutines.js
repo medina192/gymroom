@@ -67,11 +67,13 @@ const T_SubRoutinesScreen = ({navigation}) => {
   const subRoutine = useSelector(state => state.subRoutine);
   const idRelation = useSelector(state => state.idRelation);
   const user = useSelector(state => state.T_user);
- 
 
 
   const [checkboxValue, setCheckBoxValue] = useState(false);
   const [message, setMessage] = useState('');
+  const [routineName, setRoutineName] = useState('');
+  const [visible, setVisible] = useState(false);
+  const [nameExists, setNameExists] = useState(false);
 
   const clearCheckBoxes = () => {
 
@@ -106,44 +108,93 @@ const T_SubRoutinesScreen = ({navigation}) => {
     setState(!state);
   }
 
+    // begin  dialog error empty fields alert _________________________
+
+    const showDialog = () => setVisible(true);
+
+    const hideDialog = () => setVisible(false);
+  
+    // end  dialog error empty fields alert _________________________
+  
+  
+      // begin  dialog error name routine alert _________________________
+  
+      const showDialogName = () => setNameExists(true);
+  
+      const hideDialogName = () => setNameExists(false);
+    
+      // end  dialog error name routine alert _________________________
+
   const saveRoutine = () => {
     
-    let routinesSelected = [];
+    let verifyRoutinesExists = false;
     for(let i = 0; i< routines.length; i++)
     {
       if(routines[i].selected)
       {
-        routinesSelected.push(routines[i]);
+        verifyRoutinesExists = true;
+        break;
       }
     }
+
+    if(verifyRoutinesExists)
+    {
+      if(routineName)
+      {
+        let routinesSelected = [];
+        for(let i = 0; i< routines.length; i++)
+        {
+          if(routines[i].selected)
+          {
+            routinesSelected.push(routines[i]);
+          }
+        }
+        
+        const routinesString = JSON.stringify(routinesSelected);
     
-    const routinesString = JSON.stringify(routinesSelected);
-
-    const auxObject = {
-      rutinas: routinesString,
-      id_relacion_entrenador_usuario: idRelation
-    };
-
-    axios({
-      method: 'post',
-      url: `${serverUrl}/relations/saveroutinebytrainer`,
-      data: auxObject
-    })
-    .then(function (response) {
-        console.log('routine',response);
-        clearCheckBoxes();
-        navigation.navigate('ListUsers');
-    })
-    .catch(function (error) {
-        console.log('error axios',error);
-    });
+        const auxObject = {
+          ejercicios: routinesString,
+          id_relacion_entrenador_usuario: idRelation,
+          idUsuario: user.idUsuario,
+          tipo: subRoutine.name,
+          nombre: routineName
+        };
+    
+        axios({
+          method: 'post',
+          url: `${serverUrl}/relations/saveroutinebytrainer`,
+          data: auxObject
+        })
+        .then(function (response) {
+            
+            clearCheckBoxes();
+            navigation.navigate('ListUsers');
+        })
+        .catch(function (error) {
+            console.log('error axios',error);
+        });
+      }
+      else{
+        showDialog();
+      }
+    }
+    else{
+      showDialogName();
+    }
   }
 
   return (
     <>
       <TopBar navigation={navigation} title={'Seleccionar rutinas'} returnButton={true} />
         <View style={styles.containerScrollView}>
-
+        <View style={styles.containerInput}>
+              <View style={  styles.containerIconInput }>
+                <TextInput style={styles.inputRegister}
+                  placeholder="Nombre Rutina"
+                  onChangeText={ (text) => setRoutineName(text) }
+                />
+              </View>
+        </View>
             <FlatList
             data={routines}
             renderItem= { ({item, index}) =>               
@@ -172,6 +223,33 @@ const T_SubRoutinesScreen = ({navigation}) => {
                 }
             keyExtractor= { (item, index) => index}
                         />
+                    <View>
+            <Portal>
+              <Dialog visible={visible} onDismiss={hideDialog}>
+                <Dialog.Title>Error</Dialog.Title>
+                <Dialog.Content>
+                  <Paragraph>No hay rutinas seleccionadas</Paragraph>
+                </Dialog.Content>
+                <Dialog.Actions>                    
+                  <Button onPress={hideDialog}>Cerrar</Button>
+                </Dialog.Actions>
+              </Dialog>
+            </Portal>
+        </View>
+
+        <View>
+            <Portal>
+              <Dialog visible={nameExists} onDismiss={hideDialogName}>
+                <Dialog.Title>Error</Dialog.Title>
+                <Dialog.Content>
+                  <Paragraph>Asigna un nombre a la rutina</Paragraph>
+                </Dialog.Content>
+                <Dialog.Actions>                    
+                  <Button onPress={hideDialogName}>Cerrar</Button>
+                </Dialog.Actions>
+              </Dialog>
+            </Portal>
+        </View>
           <View style={styles.containerSaveButton}>
             <TouchableOpacity style={styles.saveButton} onPress={saveRoutine}>
               <Text style={styles.textSaveButton}>Guardar Rutina</Text>
@@ -187,6 +265,40 @@ const styles = StyleSheet.create({
     containerScrollView:{
         flex: 1
       },
+
+      containerInput:{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+      },
+      containerIconInput:{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '70%',
+        backgroundColor: '#fff',
+        paddingVertical: 0,
+        marginVertical: 10,
+        //borderColor: '#FB5012',
+        borderColor: Colors.MainBlue,
+        borderBottomWidth: 2,
+        paddingHorizontal: 0
+      },
+      inputRegister:{
+        backgroundColor: '#fff',
+        width: '97%',
+        fontSize: 18,
+        marginLeft: 5,
+        //borderRightWidth: 1,
+        //borderLeftWidth: 1,
+        //borderTopWidth: 1,
+        //borderBottomRightRadius: 3,
+        //borderBottomLeftRadius: 3,
+        //borderTopLeftRadius: 3,
+        //borderTopRightRadius: 3
+      },
+
+
       containerTouchableImage:{
         height: 150,
         width: '40%',

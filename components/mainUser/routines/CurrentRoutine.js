@@ -62,31 +62,107 @@ const CurrentRoutineScreen = ({navigation}) => {
 
   const serverUrl = urlServer.url;
 
-  const dispatch = useDispatch();
-
-  const [message, setMessage] = useState('');
-  //const [userInformation, setUserInformation] = useState({});
-  //const [userInformationLoaded, setUserInformationLoaded] = useState(false);
-  //const [messagesLoaded, setMessagesLoaded] = useState(false);
-
-  const [state, setState] = useState(false);
 
   const userInformation = useSelector(state => state.user);
   const trainerInformation = useSelector(state => state.trainer);
 
 
-  const currentRoutine = useSelector(state => state.currentRoutine);
+  const currentExercise = useSelector(state => state.currentExercise);
 
-
-
+  const [time, setTime] = useState(0.00);
+  const [pause, setPause] = useState(true);
 
  
+  const playCronometer = () => {
+    setPause(false);
+    setTime(time + 0.01);
+  }
 
+  const pauseCronometer = () => {
+    setPause(true);
+  }
+ 
+
+
+  useEffect(() => {
+    setTimeout(() => {
+
+      if(pause)
+      {
+        console.log(pause);
+      }
+      else{
+        let auxTime = time;
+        auxTime = time + 0.01;
+        setTime(auxTime);
+        console.log(time);
+      }
+
+
+    }, 1000);
+
+  }, [time])
+
+  
   return (
     <>
-      <TopBar navigation={navigation} title={currentRoutine.name} returnButton={true} />
-        <View style={styles.containerScrollView}>
-            <Text>{currentRoutine.name}</Text>
+      <TopBar navigation={navigation} title={currentExercise.name} returnButton={true} />
+        <View style={styles.mainContainer}>
+            <View style={styles.container}>
+
+              {
+                (
+                  () => {
+
+                    const integer = Math.trunc(time);
+                    
+
+                    const t = time.toString();
+                    console.log('ti', t);
+                    if(t === '0')
+                    {
+                      console.log('if');
+                      return(
+                        <Text style={styles.textCronometer}>0:00</Text>
+                      )
+                    }
+                    else{
+                      console.log('else');
+                      const decimal = t.split(".")[1];
+                      const decimalPart = decimal[0]+decimal[1];
+                      return(
+                        <Text style={styles.textCronometer}>{integer}:{decimalPart}</Text>
+                      )
+                    }
+                    //const decimal = t.split(".")[1];
+                    //const decimalPart = decimal[0]+decimal[1];
+                    /*
+                    return(
+                      <Text style={styles.textCronometer}>{integer}:{decimalPart}</Text>
+                    )
+                    */
+                  }
+                )()
+              }
+
+              <View style={styles.containerPlayButtons}>
+              {
+                pause ? 
+                (
+                  <TouchableOpacity onPress={playCronometer}>
+                    <Icon name="play" size={24} style={styles.iconImage} color="#fff" />
+                  </TouchableOpacity>
+
+                )
+                :
+                (
+                  <TouchableOpacity onPress={pauseCronometer}>
+                    <Icon name="pause" size={24} style={styles.iconImage} color="#fff" />
+                  </TouchableOpacity>
+                )
+              }
+              </View>
+            </View>
         </View>
       <BottomBar navigation={navigation}/>
     </>
@@ -94,53 +170,30 @@ const CurrentRoutineScreen = ({navigation}) => {
 };
 
 const styles = StyleSheet.create({
-    containerScrollView:{
-        flex: 1
-      },
-      containerTouchableImage:{
-        height: 150,
-        width: '100%',
-        backgroundColor: '#fff',
-        paddingTop: 10,
-        paddingBottom: 10,
-        paddingHorizontal: 25,
-        marginBottom: 10
-      },
-      touchableContainerImage:{
-        height: '100%',
-        width: '100%',
-        backgroundColor: '#123456',
-        borderTopLeftRadius: 10,
-        borderTopRightRadius: 10,
-        borderBottomLeftRadius: 10,
-        borderBottomRightRadius: 10,
-        overflow: 'hidden', 
-      },
-      imageButton: {
+    mainContainer:{
         flex: 1,
-        resizeMode: "cover",
-        justifyContent: "center"
-      },
-      textImageButton:{
-        color: "white",
-        fontSize: 30,
-        fontWeight: "bold",
-        textAlign: "center",
-        backgroundColor: "#244EABa0"
-      },  
-      containerTextDescriptionButton:{
         paddingHorizontal: 10,
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems:'center'
+        paddingVertical: 10
       },
-      textDescriptionButton:{
-        fontSize: 20,
-        textAlign: 'center',
-        fontWeight: '700'
-      },
-      textDescriptionButtonSubtitle:{
-        fontSize: 14,
-        marginTop: 5
-      },
+    container:{
+      backgroundColor: '#000',
+      paddingVertical: 10,
+      borderTopLeftRadius: 10,
+      borderTopRightRadius: 10,
+      borderBottomLeftRadius: 10,
+      borderBottomRightRadius: 10,
+    },
+    textCronometer:{
+      color: '#fff',
+      fontSize: 26,
+      fontWeight: '700',
+      textAlign: 'center'
+    },
+    containerPlayButtons:{
+      marginTop: 20,
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+      alignItems: 'center'
+    },  
 });

@@ -60,6 +60,7 @@ import CurrentRoutine from './components/mainUser/routines/CurrentRoutine';
 import UserProfile from './components/mainTrainer/UserProfile';
 import T_SubRoutines from './components/mainTrainer/routines/T_SubRoutines';
 import ChooseRole from './components/compartido/ChooseRole';
+import DisplayRoutine from './components/mainUser/routines/DisplayRoutine';
 
 const Stack = createStackNavigator();
 
@@ -171,6 +172,13 @@ const App = () => {
             <Stack.Screen 
               name="T_SubRoutines"
               component={T_SubRoutines}
+              options={{
+                header: () => null
+              }}
+            />
+            <Stack.Screen 
+              name="DisplayRoutine"
+              component={DisplayRoutine}
               options={{
                 header: () => null
               }}

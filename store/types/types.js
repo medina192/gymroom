@@ -7,5 +7,6 @@ export const types = {
     saveSubRoutine: 'saveSubRoutine',
     currentRoutine: 'currentRoutine',
     idRelation: 'idRelation',
-    T_routinesSaved: 'T_routinesSaved'
+    T_routinesSaved: 'T_routinesSaved',
+    currentExercise: 'currentExercise'
 }
