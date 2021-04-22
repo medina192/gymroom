@@ -22,16 +22,20 @@ import {
   StackedBarChart
 } from "react-native-chart-kit";
 
+//import { Calendar, CalendarList, Agenda} from 'react-native-calendars';
+//import {LocaleConfig} from 'react-native-calendars';
 import axios from 'axios';
 
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Button, Paragraph, Dialog, Portal } from 'react-native-paper';
 
 import TopBar from '../compartido/TopBar';
-
+//yarn add react-native-awesome-alerts
 import { createDrawerNavigator } from '@react-navigation/drawer';
 
 import SideBarUser from '../compartido/SideBarUser';
+
+import CalendarPicker from 'react-native-calendar-picker';
 
 const Drawer = createDrawerNavigator();
 
@@ -48,6 +52,19 @@ export default function Statistics() {
 
 
 const StatisticsScreen = ({navigation}) => {
+
+  const [selectedStartDate, setSelectedStartDate] = useState(null);
+  const [selectedEndDate, setSelectedEndDate] = useState(null);
+
+  const onDateChange = (date, type) => {
+    //function to handle the date change
+    if (type === 'END_DATE') {
+      setSelectedEndDate(date);
+    } else {
+      setSelectedEndDate(null);
+      setSelectedStartDate(date);
+    }
+  };
 
   // each value represents a goal ring in Progress chart
   const data = {
@@ -160,6 +177,72 @@ const StatisticsScreen = ({navigation}) => {
       <TopBar navigation={navigation} title={`Estadisticas`} returnButton={true} />
       <ScrollView style={{paddingHorizontal: 10}}>
         
+
+      <View style={styles.container}>
+        <Text style={styles.titleStyle}>
+          React Native Calendar Picker
+        </Text>
+        <CalendarPicker
+          startFromMonday={true}
+          allowRangeSelection={true}
+          minDate={new Date(2018, 1, 1)}
+          maxDate={new Date(2050, 6, 3)}
+          weekdays={
+            [
+              'Mon', 
+              'Tue', 
+              'Wed', 
+              'Thur', 
+              'Fri', 
+              'Sat', 
+              'Sun'
+            ]}
+          months={[
+            'January',
+            'Febraury',
+            'March',
+            'April',
+            'May',
+            'June',
+            'July',
+            'August',
+            'September',
+            'October',
+            'November',
+            'December',
+          ]}
+          previousTitle="Previous"
+          nextTitle="Next"
+          todayBackgroundColor="#e6ffe6"
+          selectedDayColor="#66ff33"
+          selectedDayTextColor="#000000"
+          scaleFactor={375}
+          textStyle={{
+            fontFamily: 'Cochin',
+            color: '#000000',
+          }}
+          onDateChange={onDateChange}
+        />
+        <View style={styles.textStyle}>
+          <Text style={styles.textStyle}>
+            Selected Start Date :
+          </Text>
+          <Text style={styles.textStyle}>
+            {selectedStartDate ? selectedStartDate.toString() : ''}
+          </Text>
+          <Text style={styles.textStyle}>
+            Selected End Date :
+          </Text>
+          <Text style={styles.textStyle}>
+            {selectedEndDate ? selectedEndDate.toString() : ''}
+          </Text>
+        </View>
+      </View>
+
+
+
+
+
           <View>
          
             <LineChart

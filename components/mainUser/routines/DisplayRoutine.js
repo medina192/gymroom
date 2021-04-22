@@ -80,11 +80,11 @@ const DisplayRoutineScreen = ({navigation}) => {
   const [time, setTime] = useState(0.00);
   const [stopTime, setStopTime] = useState(true);
 
-  console.log('current', currentRoutine);
+  
 
-  const changeScreen = (routine) => {
+  const changeScreen = (routine, index) => {
     
-    dispatch(saveCurrentExercise(routine));
+    dispatch(saveCurrentExercise({exercise: routine, index}));
     navigation.navigate('CurrentRoutine');
   }
 
@@ -100,7 +100,7 @@ const DisplayRoutineScreen = ({navigation}) => {
                   return(
                     <View key={index} style={styles.containerTouchableImage}>
                       <TouchableOpacity style={styles.touchableContainerImage}
-                        onPress={() => changeScreen(routine)} >
+                        onPress={() => changeScreen(routine, index)} >
                           <Text style={styles.textImageButton}>{routine.name}</Text>
                       </TouchableOpacity>
                     </View>

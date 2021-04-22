@@ -40,6 +40,9 @@ import { urlServer } from '../../../services/urlServer';
 
 import * as Keychain from 'react-native-keychain';
 //import { Colors } from 'react-native/Libraries/NewAppScreen';
+import Picker from '@gregfrench/react-native-wheel-picker'
+var PickerItem = Picker.Item;
+
 
 
 
@@ -62,6 +65,10 @@ export default function SubRoutines() {
 
 const SubRoutinesScreen = ({navigation}) => {
 
+  const [selectedItem, setSelectedItem ] = useState(3);
+  const [itemList , setItemList ] = useState(['Apple', 'Orange', 'Peach', 'Strawberries', 'Pineapple']);
+
+
 
   //const trainerInformation = route.params.trainer;
 
@@ -69,22 +76,21 @@ const SubRoutinesScreen = ({navigation}) => {
 
   const dispatch = useDispatch();
 
-  const [message, setMessage] = useState('');
+
   const [routineName, setRoutineName] = useState('');
-  //const [userInformation, setUserInformation] = useState({});
-  //const [userInformationLoaded, setUserInformationLoaded] = useState(false);
-  //const [messagesLoaded, setMessagesLoaded] = useState(false);
   const subRoutine = useSelector(state => state.subRoutine);
   const userInformation = useSelector(state => state.user);
   const trainerInformation = useSelector(state => state.trainer);
+
+
   
-
-
   const [state, setState] = useState(false);
   const [routines, setRoutines] = useState(subRoutine.routines);
   const [visible, setVisible] = useState(false);
+  const [visibleRoutines, setVisibleRoutines] = useState(false);
+  const [visibleTime, setVisibleTime] = useState(false);
   const [nameExists, setNameExists] = useState(false);
-
+  const [inputValues, setInputValues] = useState();
 
 
   const clearCheckBoxes = () => {
@@ -97,9 +103,12 @@ const SubRoutinesScreen = ({navigation}) => {
 
   useEffect(() => {
     clearCheckBoxes();
+    return () => {
+      clearCheckBoxes();
+    }
   }, []);
 
-
+  
 
   // begin  dialog error empty fields alert _________________________
 
@@ -110,18 +119,39 @@ const SubRoutinesScreen = ({navigation}) => {
   // end  dialog error empty fields alert _________________________
 
 
+  
+  // begin  dialog error empty fields alert _________________________
+
+  const showDialogName = () => setNameExists(true);
+
+  const hideDialogName = () => setNameExists(false);
+
+  // end  dialog error empty fields alert _________________________
+
+
     // begin  dialog error name routine alert _________________________
 
-    const showDialogName = () => setNameExists(true);
+    const showDialogRoutine = () => setVisibleRoutines(true);
 
-    const hideDialogName = () => setNameExists(false);
+    const hideDialogRoutine = () => setVisibleRoutines(false);
   
     // end  dialog error name routine alert _________________________
+
+
+    // begin  dialog error time alert _________________________
+
+    const showDialogTime = () => setVisibleTime(true);
+
+    const hideDialogTime = () => setVisibleTime(false);
+  
+    // end  dialog error time alert _________________________
+
+
+
  
 
   const changeCheckbox = (item,index) => {
     
-
     routines[index].selected = !item;
     setRoutines(routines);
     setState(!state);
@@ -149,7 +179,7 @@ const SubRoutinesScreen = ({navigation}) => {
 
     if(verifyRoutinesExists)
     {
-
+  
       if(routineName)
       {
         let routinesSelected = [];
@@ -161,28 +191,61 @@ const SubRoutinesScreen = ({navigation}) => {
           }
         }
         
-        const routinesString = JSON.stringify(routinesSelected);
-    
-        const auxObject = {
-          ejercicios: routinesString,
-          idUsuario: userInformation.idusuario,
-          tipo: subRoutine.name,
-          nombre: routineName
-        };
-    
-        axios({
-          method: 'post',
-          url: `${serverUrl}/relations/saveroutinebytrainer`,
-          data: auxObject
-        })
-        .then(function (response) {
-            console.log('routine',response.data.resp);
-            clearCheckBoxes();
-            navigation.navigate('ListUsers');
-        })
-        .catch(function (error) {
-            console.log('error axios',error);
-        });
+        let auxRoutinesRepetitions = true;
+        let auxTimeRoutines = true;
+        for(let i = 0; i < routinesSelected.length; i++)
+        {
+          if(routinesSelected[i].repetitions == '0' || routinesSelected[i].repetitions == '' )
+          {
+            auxRoutinesRepetitions = false;
+            break;
+          }
+
+          if((routinesSelected[i].time_minutes == '0' && routinesSelected[i].time_seconds == '0')
+           || routinesSelected[i].time_minutes == '' || routinesSelected[i].time_seconds == '')
+          {
+            auxTimeRoutines = false;
+            break;
+          }
+        }
+
+
+        if(auxRoutinesRepetitions)
+        {
+
+          if(auxTimeRoutines)
+          {
+           
+            const routinesString = JSON.stringify(routinesSelected);
+            console.log('o', userInformation);
+            const auxObject = {
+              ejercicios: routinesString,
+              idUsuario: userInformation.idusuario,
+              tipo: subRoutine.name,
+              nombre: routineName
+            };                  
+            axios({
+              method: 'post',
+              url: `${serverUrl}/relations/saveroutinebytrainer`,
+              data: auxObject
+            })
+            .then(function (response) {
+                console.log('routine',response.data.resp);
+                clearCheckBoxes();
+                navigation.navigate('MainUserScreen');
+            })
+            .catch(function (error) {
+                console.log('error axios',error);
+            });
+            
+          }
+          else{
+            showDialogTime();
+          }
+        }
+        else{
+          showDialogRoutine();
+        }
       }
       else{
         showDialogName();
@@ -192,15 +255,56 @@ const SubRoutinesScreen = ({navigation}) => {
     else{
       console.log('there is no routines');
       showDialog();
-    }
-
-    
-
+    }    
   }
   
+
+
+
+  const setValuesInputs = (text, index, type) => {
+
+    switch (type) {
+      case 'routines':
+        routines[index].repetitions = text; 
+        setRoutines(routines);
+        setState(!state);
+        break;
+      case 'minutes':
+        routines[index].time_minutes = text; 
+        setRoutines(routines);
+        setState(!state);
+        break;
+      case 'seconds':
+        routines[index].time_seconds = text; 
+        setRoutines(routines);
+        setState(!state);
+        break;
+    
+      default:
+        break;
+    }
+  }
+
+console.log('sub', subRoutine.routines);
   return (
     <>
       <TopBar navigation={navigation} title={subRoutine.name} returnButton={true} />
+      {
+        /*
+                <Picker style={{width: 150, height: 180}}
+          lineColor="#000000"
+          lineGradientColorFrom="#008000" 
+          lineGradientColorTo="#FF5733" 
+          selectedValue={selectedItem}
+          itemStyle={{color:"#000", fontSize:26}}
+          onValueChange={(index) => setSelectedItem(index) }>
+          {itemList.map((value, i) => (
+            <PickerItem label={value} value={i} key={i} />
+          ))}
+        </Picker>
+        */
+      }
+
         {
           /*
         <View style={styles.containerScrollView}>
@@ -234,26 +338,66 @@ const SubRoutinesScreen = ({navigation}) => {
 
             <View>
 
-              {
-                subRoutine.routines.map((routine, index) => (
-                  <>
-                    <View style={styles.containerTouchableImage}>
-                      <TouchableOpacity style={styles.touchableContainerImage}
-                        onPress={() => changeToRoutine(routine)} >
-                          <Text style={styles.textImageButton}>{routine.name}</Text>
-                      </TouchableOpacity>
-                    </View>
-                    <View style={styles.containerCheckBox1}>
-                        <CheckBox
-                            disabled={false}
-                            value={routine.selected}
-                            onValueChange={() => changeCheckbox(routine.selected,index)}
-                        />
-                      </View>
-                  </>
-                  
-                ))
-              }
+                {
+                    subRoutine.routines.map((routine, index) => (
+     
+                        <View key={index}>
+                        <View style={styles.containerTouchableImage}>
+                          <TouchableOpacity style={styles.touchableContainerImage}
+                            onPress={() => changeToRoutine(routine)} >
+                              <Text style={styles.textImageButton}>{routine.name}</Text>
+                          </TouchableOpacity>
+                        </View>
+                        <View style={styles.containerCheckBox1}>
+                            <CheckBox
+                                disabled={false}
+                                value={routine.selected}
+                                onValueChange={() => changeCheckbox(routine.selected,index)}
+                            />
+                            {
+                              routine.selected ?
+                              (
+                                <>
+                                  <View style={styles.containerInputs}>
+                                  <View style={styles.containerNumberRoutineInput}>
+                                      <Text style={styles.textNumberRoutine}>Número de repeticiones</Text>
+                                      <TextInput style={styles.inputNumberRoutine}
+                                        placeholder="0"
+                                        keyboardType="numeric"
+                                        onChangeText={ (text) => setValuesInputs(text, index, 'routines') }
+                                      />
+                                    </View>
+                                    <View style={styles.containerInputTime}>
+                                      <Text style={styles.textTime}>Minutos</Text>
+                                      <TextInput style={styles.inputRegister}
+                                        placeholder="0"
+                                        keyboardType="numeric"
+                                        onChangeText={ (text) => setValuesInputs(text, index, 'minutes') }
+                                      />
+                                    </View>
+                                    <View style={styles.containerInputTime}>
+                                      <Text style={styles.textTime}>Segundos</Text>
+                                      <TextInput style={styles.inputRegister}
+                                        placeholder="0"
+                                        keyboardType="numeric"
+                                        onChangeText={ (text) => setValuesInputs(text, index, 'seconds') }
+                                      />
+                                    </View>
+                                  </View>
+                                </>
+                              )
+                              :
+                              (
+                                <>
+                                <Text>hola</Text>
+                                </>
+                              )
+                            }
+                          </View>
+                        </View>
+                      
+                    ))
+                  }
             </View>
           </ScrollView>
         </View>
@@ -286,6 +430,34 @@ const SubRoutinesScreen = ({navigation}) => {
             </Portal>
         </View>
 
+        <View>
+            <Portal>
+              <Dialog visible={visibleRoutines} onDismiss={hideDialogRoutine}>
+                <Dialog.Title>Error</Dialog.Title>
+                <Dialog.Content>
+                  <Paragraph>Debes asignar mínimo una repetición</Paragraph>
+                </Dialog.Content>
+                <Dialog.Actions>                    
+                  <Button onPress={hideDialogRoutine}>Cerrar</Button>
+                </Dialog.Actions>
+              </Dialog>
+            </Portal>
+        </View>
+
+        <View>
+            <Portal>
+              <Dialog visible={visibleTime} onDismiss={hideDialogTime}>
+                <Dialog.Title>Error</Dialog.Title>
+                <Dialog.Content>
+                  <Paragraph>Una ejercicio no puede tener tiempo 0</Paragraph>
+                </Dialog.Content>
+                <Dialog.Actions>                    
+                  <Button onPress={hideDialogTime}>Cerrar</Button>
+                </Dialog.Actions>
+              </Dialog>
+            </Portal>
+        </View>
+
         <View style={styles.containerSaveButton}>
             <TouchableOpacity style={styles.saveButton} onPress={saveRoutine}>
               <Text style={styles.textSaveButton}>Guardar Rutina</Text>
@@ -296,6 +468,38 @@ const SubRoutinesScreen = ({navigation}) => {
   );
 };
 
+
+/*
+                                    <View style={styles.containerNumberRoutineInput}>
+                                      <Text style={styles.textNumberRoutine}>Número de repeticiones</Text>
+                                      <TextInput style={styles.inputNumberRoutine}
+                                        placeholder="0"
+                                        defaultValue="0"
+                                        keyboardType="numeric"
+                                        onChangeText={ (text) => setValuesInputs(text, index, 'routines') }
+                                      />
+                                    </View>
+
+                                    <View style={styles.containerInputTime}>
+                                      <Text style={styles.textTime}>Minutos</Text>
+                                      <TextInput style={styles.inputRegister}
+                                        placeholder="0"
+                                        defaultValue="0"
+                                        keyboardType="numeric"
+                                        onChangeText={ (text) => setValuesInputs(text, index, 'minutes') }
+                                      />
+                                    </View>
+                                    <View style={styles.containerInputTime}>
+                                      <Text style={styles.textTime}>Segundos</Text>
+                                      <TextInput style={styles.inputRegister}
+                                        placeholder="0"
+                                        defaultValue="0"
+                                        keyboardType="numeric"
+                                        onChangeText={ (text) => setValuesInputs(text, index, 'seconds') }
+                                      />
+                                    </View>
+*/
+
 const styles = StyleSheet.create({
     containerScrollView:{
         flex: 1,
@@ -305,6 +509,35 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
       },
+
+      //inputs
+      containerInputs:{
+        //paddingHorizontal: 25,
+        //marginBottom: 20,
+        display: 'flex',
+        flexDirection: 'row',
+        //justifyContent: 'space-around',
+        //alignItems: 'flex-end',
+      },
+      containerNumberRoutineInput:{
+        width: '30%'
+      },
+      containerInputTime:{
+        width: '25%'
+      },
+      textNumberRoutine:{
+        fontSize: 16
+      },
+      inputNumberRoutine:{
+        backgroundColor: '#fff',
+        fontSize: 15,
+        width: '60%'
+      },
+      textTime:{
+        fontSize: 16
+      },  
+
+
       containerTouchableImage:{
         height: 150,
         width: '100%',
@@ -329,7 +562,7 @@ const styles = StyleSheet.create({
       },
       inputRegister:{
         backgroundColor: '#fff',
-        width: '97%',
+        width: '90%',
         fontSize: 18,
         marginLeft: 5,
         //borderRightWidth: 1,

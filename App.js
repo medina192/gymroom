@@ -61,6 +61,10 @@ import UserProfile from './components/mainTrainer/UserProfile';
 import T_SubRoutines from './components/mainTrainer/routines/T_SubRoutines';
 import ChooseRole from './components/compartido/ChooseRole';
 import DisplayRoutine from './components/mainUser/routines/DisplayRoutine';
+import Stream1 from './components/streaming/Stream1';
+import Live from './components/streaming/Live';
+import Home from './components/streaming/Home';
+import CreateRoutines from './components/mainTrainer/routines/CreateRoutines';
 
 const Stack = createStackNavigator();
 
@@ -75,6 +79,27 @@ const App = () => {
       <PaperProvider>
         <NavigationContainer>
           <Stack.Navigator initialRouteName={initialRoute}>
+          <Stack.Screen 
+              name="Stream1"
+              component={Stream1}
+              options={{
+                header: () => null
+              }}
+            />
+            <Stack.Screen 
+              name="Home"
+              component={Home}
+              options={{
+                header: () => null
+              }}
+            />
+            <Stack.Screen 
+              name="Live"
+              component={Live}
+              options={{
+                header: () => null
+              }}
+            />
             <Stack.Screen 
               name="Registro"
               component={Registro}
@@ -172,6 +197,13 @@ const App = () => {
             <Stack.Screen 
               name="T_SubRoutines"
               component={T_SubRoutines}
+              options={{
+                header: () => null
+              }}
+            />
+            <Stack.Screen 
+              name="CreateRoutines"
+              component={CreateRoutines}
               options={{
                 header: () => null
               }}

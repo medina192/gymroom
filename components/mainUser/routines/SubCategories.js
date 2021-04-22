@@ -79,6 +79,7 @@ const SubCategoriesScreen = ({navigation, route}) => {
 
   const changeToSubRoutine = (categorie) => {
 
+    console.log('user', user);
     if(user)
     {
       dispatch(saveSubRoutine(categorie));

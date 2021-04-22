@@ -129,7 +129,16 @@ try {
 
   const changeScreen = (routine) => {
 
-    routine.ejercicios = JSON.parse(routine.ejercicios);
+    if(routine.ejercicios === Object(routine.ejercicios))
+    {
+
+    }
+    else{
+
+      routine.ejercicios = JSON.parse(routine.ejercicios);
+    }
+    
+    
     dispatch(saveCurrentRoutine(routine));
     navigation.navigate('DisplayRoutine');
   }

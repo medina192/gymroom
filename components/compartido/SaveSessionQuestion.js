@@ -26,7 +26,7 @@ import * as Keychain from 'react-native-keychain';
 
 const SaveSessionQuestion = ({navigation, route}) => {
 
-    console.log('rout', route.params.rol);
+ 
     const rol = route.params.rol;
     const dispatch = useDispatch();
 
@@ -38,6 +38,7 @@ const SaveSessionQuestion = ({navigation, route}) => {
     const userClient = useSelector(state => state.user);
     const trainer = useSelector(state => state.T_trainer);
 
+    
 
     const generateSecureStorage = async(user) => {
         const userString = JSON.stringify(user);
@@ -47,7 +48,7 @@ const SaveSessionQuestion = ({navigation, route}) => {
         try {
               // Store the credentials
           await Keychain.setGenericPassword(username, password);
-    
+          
           if(isEnabled){
               if(route.params.role === 'MainUserScreen'){
                 //const data = {

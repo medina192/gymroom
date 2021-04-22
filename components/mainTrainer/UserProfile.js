@@ -67,7 +67,7 @@ const UserProfileScreen = ({navigation}) => {
 
 
   const getRoutines = () => {
-    console.log('id', idRelation);
+    
     axios({
       method: 'get',
       url: `${serverUrl}/relations/getroutines/${idRelation}`,
@@ -79,11 +79,14 @@ const UserProfileScreen = ({navigation}) => {
         {
           const routinesString = response.data.resp;
           
-          
-          let r = JSON.parse(response.data.resp[0].ejercicios);
-
+          console.log('if');
+          //let r = JSON.parse(response.data.resp);
+          //console.log('r---------', r);
           setRoutines(routinesString);
           
+        }
+        else{
+          console.log('else');
         }
 
     })
@@ -160,14 +163,15 @@ const UserProfileScreen = ({navigation}) => {
 
   const createNewRoutine = () => {
     dispatch(saveIdRelation(user.id_relacion_entrenador_usuario));
-    navigation.navigate('Routines');
+    navigation.navigate('CreateRoutines');
   } 
-
+  console.log('rou', routines);
 
   return (
     <>
        <TopBar navigation={navigation} title={'user profile'} returnButton={true}/>
-       <View style={styles.containerTrainerCard}>
+
+        <ScrollView style={{padding: 15, flex: 1, marginBottom: 10}}>
           <View style={styles.trainerCard}>
             <View style={styles.containerImage_Name}>
                 <Icon name="user-o" size={24} style={styles.iconImage} color="#fff" />
@@ -201,21 +205,27 @@ const UserProfileScreen = ({navigation}) => {
               </View>
 
               <Text>Rutinas</Text>
-              <ScrollView>
+              
                 <View>
                 {
                   (routines.length > 0) ?
                   
                     
-                      routines.map((routine) => {
-                        let routineObject = JSON.parse(routine.ejercicios);
+                      routines.map((routine, index) => {
+                        //let routineObject = JSON.parse(routine.ejercicios);
+                        let exercises = JSON.parse(routine.ejercicios);
                         return(
-                          <View style={styles.routineCard}>
-                            <Text>{routine.nombre}</Text>
+                          <View key={index} style={styles.routineCard}>
+                            <Text style={{fontSize: 18, color: '#fff'}}>{routine.nombre}</Text>
                              {
-                               routineObject.map((rutina) => (
-                                 <Text style={styles.textRoutineCard}>{rutina.name}</Text>
-                               ))
+                               exercises.map((rutina, indexRutina) => {
+                                
+                                return(
+                                  <View key={indexRutina}>
+                                    <Text style={styles.textRoutineCard}>{rutina.name}</Text>
+                                  </View>
+                                )
+                               })
                              }
                           </View>
                         )
@@ -230,9 +240,7 @@ const UserProfileScreen = ({navigation}) => {
                 </View>
               </ScrollView>
 
-
-        </View>
-        <BottomBar navigation={navigation}/>
+      <BottomBar navigation={navigation}/>
     </>
   );
 };
@@ -293,7 +301,7 @@ const styles = StyleSheet.create({
     },  
 
     routineCard:{
-      marginVertical: 10,
+      marginBottom: 20,
       backgroundColor: Colors.MainBlue,
       paddingVertical: 7,
       paddingHorizontal: 10,

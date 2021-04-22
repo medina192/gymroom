@@ -75,6 +75,9 @@ const ChooseRole = ({navigation, route}) => {
             cedula_entrenador: form.cedula,
             idusuario
           } 
+
+          console.log('trainer');
+          
           axios({
             method: 'post',
             url: `${serverUrl}/auth/registerafterrol`,
@@ -82,7 +85,7 @@ const ChooseRole = ({navigation, route}) => {
           })
           .then(function (response) {
               console.log('good, user registered',response);
-              dispatch(saveUser(bodyUser));
+              dispatch(T_saveTrainer(bodyUser));
               navigation.navigate('SaveSessionQuestion', {role: 'MainTrainerScreen',rol: 2});
               //navigation.navigate('MainUserScreen');
               //dispatch(saveUser(bodyUser));
@@ -100,6 +103,7 @@ const ChooseRole = ({navigation, route}) => {
                  console.log('server error');
               }
           });
+          
         }
         else{
             bodyUser = {
@@ -115,16 +119,37 @@ const ChooseRole = ({navigation, route}) => {
             cedula_entrenador: '',
             idusuario
           } 
+
+          console.log('body', bodyUser);
+          
+          
           axios({
             method: 'post',
             url: `${serverUrl}/auth/registerafterrol`,
             data: bodyUser
           })
           .then(function (response) {
-              console.log('good, user registered',response);
-              dispatch(T_saveTrainer(bodyUser));
-              navigation.navigate('SaveSessionQuestion',{role: 'MainUserScreen',rol: 1});
-              //navigation.navigate('SaveSessionQuestion');
+              console.log('good, user registered',response.data.resp[0]);
+
+              const bodyStatisticsUser = {
+                idUsuario: idusuario
+              }
+              
+              axios({
+                method: 'post',
+                url: `${serverUrl}/userscreens/createuserstatistics`,
+                data: bodyStatisticsUser
+              })
+              .then(function (response) {
+                console.log('good, statistics registered',response);
+                dispatch(saveUser(bodyUser));
+                navigation.navigate('SaveSessionQuestion',{role: 'MainUserScreen',rol: 1});
+                //navigation.navigate('SaveSessionQuestion');
+              })
+              .catch(function (error) {
+                console.log('error create statistics', error);
+              });
+              
           })
           .catch(function (error) {
               //console.log('res', error.response.data.sqlMessage);
@@ -138,6 +163,7 @@ const ChooseRole = ({navigation, route}) => {
                  console.log('server error');
               }
           });
+          
         }
 
         
@@ -193,7 +219,7 @@ const ChooseRole = ({navigation, route}) => {
                   if(error.response?.data.sqlMessage)
                   {
                     console.log('hi',error.response?.data.sqlMessage);
-                    console.log('email already exists');
+                    console.log('email already user exists');
 
                   }
                   else{
@@ -212,7 +238,7 @@ const ChooseRole = ({navigation, route}) => {
               data: bodyUser
             })
             .then(function (response) {
-                console.log('good, user registered',response);
+                console.log('good, user  registered',response);
                 registerUser(true);
                 //bodyUser.idusuario = response.data.resp.insertId;
                 //navigation.navigate('ChooseRole',bodyUser);
@@ -224,7 +250,7 @@ const ChooseRole = ({navigation, route}) => {
                 if(error.response?.data.sqlMessage)
                 {
                   console.log('hi',error.response?.data.sqlMessage);
-                  console.log('email already exists');
+                  console.log('email already trainer exists');
                 }
                 else{
                    console.log('server error');

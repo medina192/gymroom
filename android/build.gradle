@@ -9,7 +9,7 @@ buildscript {
         //googlePlayServicesAuthVersion="17.0.0"  google sign in
     }
     repositories {
-        mavenCentral()        // facebook api
+        //mavenCentral()        // facebook api
         google()
         jcenter()
     }

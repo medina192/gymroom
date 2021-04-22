@@ -25,7 +25,7 @@ import CheckBox from '@react-native-community/checkbox';
 
 import { GoogleSignin, GoogleSigninButton, statusCodes } from '@react-native-google-signin/google-signin';
 
-import { LoginButton, AccessToken } from 'react-native-fbsdk';
+//import { LoginButton, AccessToken } from 'react-native-fbsdk';
 //import { Colors } from 'react-native/Libraries/NewAppScreen';
 import Colors from '../../colors/colors';
 
@@ -563,7 +563,9 @@ const sendForm = () => {
               <Text style={styles.buttonLoginText}>Registrarse</Text>
             </TouchableHighlight>
 
-            <View>
+            {
+              /*
+                           <View>
               <LoginButton
                 onLoginFinished={
                   (error, result) => {
@@ -582,6 +584,8 @@ const sendForm = () => {
                 }
                 onLogoutFinished={() => console.log("logout.")}/>
             </View>
+               */
+            }
 
             <GoogleSigninButton
               style={{ width: 200, height: 60 }}

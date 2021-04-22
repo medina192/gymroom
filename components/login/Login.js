@@ -18,7 +18,7 @@ import FontAwesome, { SolidIcons, RegularIcons, BrandIcons } from 'react-native-
 import axios from 'axios';
 
 import { GoogleSignin, GoogleSigninButton, statusCodes } from '@react-native-google-signin/google-signin';
-import { LoginButton, AccessToken } from 'react-native-fbsdk';
+//import { LoginButton, AccessToken } from 'react-native-fbsdk';
 
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Button, Paragraph, Dialog, Portal } from 'react-native-paper';
@@ -339,7 +339,9 @@ const Login = ({navigation}) => {
         <TouchableHighlight style={styles.buttonLogin} onPress={sendForm}>
           <Text style={styles.buttonLoginText}>Iniciar sesión</Text>
         </TouchableHighlight>
-        <View>
+       {
+         /*
+          <View>
               <LoginButton
                 onLoginFinished={
                   (error, result) => {
@@ -358,6 +360,8 @@ const Login = ({navigation}) => {
                 }
                 onLogoutFinished={() => console.log("logout.")}/>
             </View>
+         */
+       }
 
             <GoogleSigninButton
               style={{ width: 200, height: 60 }}

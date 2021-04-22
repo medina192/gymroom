@@ -40,6 +40,7 @@ const AskScreen = ({navigation}) => {
     
             if(credentials.password == '1')
             {
+              console.log('asd',userObject);
               dispatch(saveUser(userObject));
               navigation.navigate('MainUserScreen');
             }

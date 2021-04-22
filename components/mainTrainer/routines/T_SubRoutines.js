@@ -67,13 +67,18 @@ const T_SubRoutinesScreen = ({navigation}) => {
   const subRoutine = useSelector(state => state.subRoutine);
   const idRelation = useSelector(state => state.idRelation);
   const user = useSelector(state => state.T_user);
+  const state1= useSelector(state => state)
 
-
+  console.log(state1);
+  console.log('s', user.idUsuario);
   const [checkboxValue, setCheckBoxValue] = useState(false);
-  const [message, setMessage] = useState('');
   const [routineName, setRoutineName] = useState('');
   const [visible, setVisible] = useState(false);
   const [nameExists, setNameExists] = useState(false);
+  const [visibleRoutines, setVisibleRoutines] = useState(false);
+  const [visibleTime, setVisibleTime] = useState(false);
+
+
 
   const clearCheckBoxes = () => {
 
@@ -85,6 +90,9 @@ const T_SubRoutinesScreen = ({navigation}) => {
 
   useEffect(() => {
     clearCheckBoxes();
+    return () => {
+      clearCheckBoxes();
+    }
   }, []);
 
 
@@ -92,8 +100,7 @@ const T_SubRoutinesScreen = ({navigation}) => {
   const [state, setState] = useState(false);
   const [routines, setRoutines] = useState(subRoutine.routines);
 
-  //const userInformation = useSelector(state => state.user);
-  //const trainerInformation = useSelector(state => state.trainer);
+
 
 
   const changeToRoutine = (routine) => {
@@ -102,7 +109,6 @@ const T_SubRoutinesScreen = ({navigation}) => {
 
   const changeCheckbox = (item,index) => {
     
-
     routines[index].selected = !item;
     setRoutines(routines);
     setState(!state);
@@ -125,6 +131,49 @@ const T_SubRoutinesScreen = ({navigation}) => {
     
       // end  dialog error name routine alert _________________________
 
+
+          // begin  dialog error name routine alert _________________________
+
+    const showDialogRoutine = () => setVisibleRoutines(true);
+
+    const hideDialogRoutine = () => setVisibleRoutines(false);
+  
+    // end  dialog error name routine alert _________________________
+
+
+    // begin  dialog error time alert _________________________
+
+    const showDialogTime = () => setVisibleTime(true);
+
+    const hideDialogTime = () => setVisibleTime(false);
+  
+    // end  dialog error time alert _________________________
+
+    const setValuesInputs = (text, index, type) => {
+
+      switch (type) {
+        case 'routines':
+          routines[index].repetitions = text; 
+          setRoutines(routines);
+          setState(!state);
+          break;
+        case 'minutes':
+          routines[index].time_minutes = text; 
+          setRoutines(routines);
+          setState(!state);
+          break;
+        case 'seconds':
+          routines[index].time_seconds = text; 
+          setRoutines(routines);
+          setState(!state);
+          break;
+      
+        default:
+          break;
+      }
+    }
+
+
   const saveRoutine = () => {
     
     let verifyRoutinesExists = false;
@@ -136,6 +185,7 @@ const T_SubRoutinesScreen = ({navigation}) => {
         break;
       }
     }
+
 
     if(verifyRoutinesExists)
     {
@@ -149,81 +199,194 @@ const T_SubRoutinesScreen = ({navigation}) => {
             routinesSelected.push(routines[i]);
           }
         }
+
+        let auxRoutinesRepetitions = true;
+        let auxTimeRoutines = true;
+        for(let i = 0; i < routinesSelected.length; i++)
+        {
+          if(routinesSelected[i].repetitions == '0' || routinesSelected[i].repetitions == '' )
+          {
+            auxRoutinesRepetitions = false;
+            break;
+          }
+          console.log(routinesSelected[i].time_minutes);
+          console.log(routinesSelected[i].time_seconds);
+          if((routinesSelected[i].time_minutes == '0' && routinesSelected[i].time_seconds == '0')
+           || routinesSelected[i].time_minutes == '' || routinesSelected[i].time_seconds == '')
+          {
+           
+            auxTimeRoutines = false;
+            break;
+          }
+        }
+
+        if(auxRoutinesRepetitions)
+        {
+
+          if(auxTimeRoutines)
+          {
+           
+            const routinesString = JSON.stringify(routinesSelected);
         
-        const routinesString = JSON.stringify(routinesSelected);
-    
-        const auxObject = {
-          ejercicios: routinesString,
-          id_relacion_entrenador_usuario: idRelation,
-          idUsuario: user.idUsuario,
-          tipo: subRoutine.name,
-          nombre: routineName
-        };
-    
-        axios({
-          method: 'post',
-          url: `${serverUrl}/relations/saveroutinebytrainer`,
-          data: auxObject
-        })
-        .then(function (response) {
+            const auxObject = {
+              ejercicios: routinesString,
+              idUsuario: user.idUsuario,
+              tipo: subRoutine.name,
+              nombre: routineName,
+              id_relacion_entrenador_usuario: user.id_relacion_entrenador_usuario
+            };
             
-            clearCheckBoxes();
-            navigation.navigate('ListUsers');
-        })
-        .catch(function (error) {
-            console.log('error axios',error);
-        });
+            
+            axios({
+              method: 'post',
+              url: `${serverUrl}/relations/saveroutinebytrainer`,
+              data: auxObject
+            })
+            .then(function (response) {
+                console.log('routine',response.data.resp);
+                clearCheckBoxes();
+                navigation.navigate('ListUsers');
+            })
+            .catch(function (error) {
+                //console.log('error axios',error);
+            });
+            
+          }
+          else{
+            showDialogTime();
+          }
+        }
+        else{
+          showDialogRoutine();
+        }
+  
       }
       else{
-        showDialog();
+        showDialogName();
       }
     }
     else{
-      showDialogName();
+      showDialog();
     }
   }
 
   return (
     <>
-      <TopBar navigation={navigation} title={'Seleccionar rutinas'} returnButton={true} />
+      <TopBar navigation={navigation} title={'Seleccionar Rutinas'} returnButton={true} />
+      {
+        /*
+                <Picker style={{width: 150, height: 180}}
+          lineColor="#000000"
+          lineGradientColorFrom="#008000" 
+          lineGradientColorTo="#FF5733" 
+          selectedValue={selectedItem}
+          itemStyle={{color:"#000", fontSize:26}}
+          onValueChange={(index) => setSelectedItem(index) }>
+          {itemList.map((value, i) => (
+            <PickerItem label={value} value={i} key={i} />
+          ))}
+        </Picker>
+        */
+      }
+
+        {
+          /*
         <View style={styles.containerScrollView}>
-        <View style={styles.containerInput}>
+        <FlatList
+        data={subRoutine.routines}
+        renderItem= { (routine) =>               
+            (
+                <View style={styles.containerTouchableImage}>
+                    <TouchableOpacity style={styles.touchableContainerImage}
+                    onPress={() => changeToRoutine(routine.item)} >
+                        <Text style={styles.textImageButton}>{routine.item.name}</Text>
+                    </TouchableOpacity>
+                </View>
+            )
+            }
+        keyExtractor= { (item, key) => key}
+                    />
+    </View>*/
+        }
+
+        <View style={styles.containerScrollView}>
+          <ScrollView>
+            <View style={styles.containerInput}>
               <View style={  styles.containerIconInput }>
                 <TextInput style={styles.inputRegister}
                   placeholder="Nombre Rutina"
                   onChangeText={ (text) => setRoutineName(text) }
                 />
               </View>
-        </View>
-            <FlatList
-            data={routines}
-            renderItem= { ({item, index}) =>               
-                ( 
-                  
-                  () => {
-                    return(
+            </View>
+
+            <View>
+
+                {
+                    subRoutine.routines.map((routine, index) => (
                       <>
                         <View style={styles.containerTouchableImage}>
-                            <TouchableOpacity style={styles.touchableContainerImage}
-                            onPress={() => changeToRoutine(index)} >
-                                <Text style={styles.textImageButton}>{item.name}</Text>
-                            </TouchableOpacity>
+                          <TouchableOpacity style={styles.touchableContainerImage}
+                            onPress={() => changeToRoutine(routine)} >
+                              <Text style={styles.textImageButton}>{routine.name}</Text>
+                          </TouchableOpacity>
                         </View>
                         <View style={styles.containerCheckBox1}>
                             <CheckBox
-                              disabled={false}
-                              value={item.selected}
-                              onValueChange={() => changeCheckbox(item.selected,index)}
+                                disabled={false}
+                                value={routine.selected}
+                                onValueChange={() => changeCheckbox(routine.selected,index)}
                             />
-                        </View>
-                    </> 
-                    )
+                            {
+                              routine.selected ?
+                              (
+                                <>
+                                  <View style={styles.containerInputs}>
+                                    <View style={styles.containerNumberRoutineInput}>
+                                      <Text style={styles.textNumberRoutine}>Número de repeticiones</Text>
+                                      <TextInput style={styles.inputNumberRoutine}
+                                        placeholder="0"
+                                        keyboardType="numeric"
+                                        onChangeText={ (text) => setValuesInputs(text, index, 'routines') }
+                                      />
+                                    </View>
+
+                                    <View style={styles.containerInputTime}>
+                                      <Text style={styles.textTime}>Minutos</Text>
+                                      <TextInput style={styles.inputRegister}
+                                        placeholder="0"
+                                        keyboardType="numeric"
+                                        onChangeText={ (text) => setValuesInputs(text, index, 'minutes') }
+                                      />
+                                    </View>
+                                    <View style={styles.containerInputTime}>
+                                      <Text style={styles.textTime}>Segundos</Text>
+                                      <TextInput style={styles.inputRegister}
+                                        placeholder="0"
+                                        keyboardType="numeric"
+                                        onChangeText={ (text) => setValuesInputs(text, index, 'seconds') }
+                                      />
+                                    </View>
+                                  </View>
+                                </>
+                              )
+                              :
+                              (
+                                <>
+                                <Text></Text>
+                                </>
+                              )
+                            }
+                          </View>
+                      </>
+                      
+                    ))
                   }
-                )()
-                }
-            keyExtractor= { (item, index) => index}
-                        />
-                    <View>
+            </View>
+          </ScrollView>
+        </View>
+
+        <View>
             <Portal>
               <Dialog visible={visible} onDismiss={hideDialog}>
                 <Dialog.Title>Error</Dialog.Title>
@@ -250,11 +413,39 @@ const T_SubRoutinesScreen = ({navigation}) => {
               </Dialog>
             </Portal>
         </View>
-          <View style={styles.containerSaveButton}>
+
+        <View>
+            <Portal>
+              <Dialog visible={visibleRoutines} onDismiss={hideDialogRoutine}>
+                <Dialog.Title>Error</Dialog.Title>
+                <Dialog.Content>
+                  <Paragraph>Debes asignar mínimo una repetición</Paragraph>
+                </Dialog.Content>
+                <Dialog.Actions>                    
+                  <Button onPress={hideDialogRoutine}>Cerrar</Button>
+                </Dialog.Actions>
+              </Dialog>
+            </Portal>
+        </View>
+
+        <View>
+            <Portal>
+              <Dialog visible={visibleTime} onDismiss={hideDialogTime}>
+                <Dialog.Title>Error</Dialog.Title>
+                <Dialog.Content>
+                  <Paragraph>Una ejercicio no puede tener tiempo 0</Paragraph>
+                </Dialog.Content>
+                <Dialog.Actions>                    
+                  <Button onPress={hideDialogTime}>Cerrar</Button>
+                </Dialog.Actions>
+              </Dialog>
+            </Portal>
+        </View>
+
+        <View style={styles.containerSaveButton}>
             <TouchableOpacity style={styles.saveButton} onPress={saveRoutine}>
               <Text style={styles.textSaveButton}>Guardar Rutina</Text>
             </TouchableOpacity>
-          </View>
         </View>
       <BottomBar navigation={navigation}/>
     </>
@@ -266,11 +457,40 @@ const styles = StyleSheet.create({
         flex: 1
       },
 
+      
+      containerTouchableImage:{
+        height: 150,
+        width: '100%',
+        backgroundColor: '#fff',
+        paddingTop: 10,
+        paddingBottom: 10,
+        paddingHorizontal: 25,
+        marginBottom: 10
+      },
+      touchableContainerImage:{
+        height: '100%',
+        width: '100%',
+        backgroundColor: '#123456',
+        borderTopLeftRadius: 10,
+        borderTopRightRadius: 10,
+        borderBottomLeftRadius: 10,
+        borderBottomRightRadius: 10,
+        overflow: 'hidden', 
+      },
+      textImageButton:{
+        color: "white",
+        fontSize: 30,
+        fontWeight: "bold",
+        textAlign: "center",
+        backgroundColor: "#244EABa0"
+      },  
+
       containerInput:{
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
       },
+     
       containerIconInput:{
         display: 'flex',
         justifyContent: 'center',
@@ -298,42 +518,43 @@ const styles = StyleSheet.create({
         //borderTopRightRadius: 3
       },
 
+     //inputs
+     containerInputs:{
+      paddingHorizontal: 25,
+      marginBottom: 20,
+      display: 'flex',
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+      alignItems: 'flex-end'
+    },
+    containerNumberRoutineInput:{
+      width: '30%'
+    },
+    containerInputTime:{
+      width: '25%'
+    },
+    textNumberRoutine:{
+      fontSize: 16
+    },
+    inputNumberRoutine:{
+      backgroundColor: '#fff',
+      fontSize: 15,
+      width: '60%'
+    },
+    textTime:{
+      fontSize: 16
+    },  
 
-      containerTouchableImage:{
-        height: 150,
-        width: '40%',
-        backgroundColor: '#fff',
-        paddingTop: 10,
-        paddingBottom: 10,
-        paddingHorizontal: 25,
-        marginBottom: 0
-      },
-      touchableContainerImage:{
-        height: '100%',
-        width: '100%',
-        backgroundColor: '#123456',
-        borderTopLeftRadius: 10,
-        borderTopRightRadius: 10,
-        borderBottomLeftRadius: 10,
-        borderBottomRightRadius: 10,
-        overflow: 'hidden', 
-      },
+ 
       containerCheckbox:{
         marginTop: 10,
         width: '100%',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#123456'
+        backgroundColor: '#000'
       },
-      containerCheckBox1:{
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        width: '40%',
-        marginBottom: 20,
-      },
+
       imageButton: {
         flex: 1,
         resizeMode: "cover",
